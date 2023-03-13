@@ -12,7 +12,7 @@ CREATE TABLE user
      city            VARCHAR(255) NOT NULL,
      first_name      VARCHAR(36),
      last_name       VARCHAR(36),
-     password        VARCHAR(36) NOT NULL,
+     password        VARCHAR(255) NOT NULL,
      profile_picture VARCHAR(255),
      phone_number    VARCHAR(10) NOT NULL,
      username        VARCHAR(36) NOT NULL,

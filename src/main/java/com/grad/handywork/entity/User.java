@@ -39,7 +39,7 @@ public class User {
 
 	@Column(name = "password")
 	@NotNull(message = "Password Field Cannot Be Empty")
-	@Size(min = 8, max = 36, message = "Password Field Must Be Between 8 and 36")
+	@Size(min = 8, message = "Password Field Be 8 Or More")
 	private String password;
 
 	@Column(name = "first_name")
