@@ -3,7 +3,9 @@ package com.grad.handywork.entity;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.web.multipart.MultipartFile;
+import com.grad.handywork.validation.UniqueEmail;
+import com.grad.handywork.validation.UniquePhoneNumber;
+import com.grad.handywork.validation.UniqueUsername;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -22,7 +24,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 
 	@Id
@@ -32,6 +34,7 @@ public class User {
 	@Column(name = "username")
 	@NotNull(message = "Username Field Cannot Be Empty")
 	@Size(min = 4, max = 36, message = "Username Field Must Be Between 4 And 36")
+	@UniqueUsername
 	private String username;
 
 	@Column(name = "password")
@@ -50,21 +53,28 @@ public class User {
 	@Column(name = "email")
 	@NotEmpty(message = "Email Field Cannot be empty")
 	@Email(message = "Please Enter A Valid Email")
+	@UniqueEmail
 	private String email;
 
 	@Column(name = "phone_number")
 	@NotEmpty(message = "Phone Number Field Cannot be empty")
 	@Pattern(regexp = "^07[789][0-9]{7}$", message = "Please Enter A Valid Phone Number")
+	@UniquePhoneNumber
 	private String phoneNumber;
 
 	@Column(name = "profile_picture")
 	private String pfpUrl;
+	
+	@NotNull(message =  "City Field Cannot be empty")
+	@Size(message = "City Field Cannot Be Less than 3")
+	@Column(name = "city")
+	private String city;
 
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Job> jobs;
 	
 	@Transient
-	private MultipartFile pfpFile;
+	private String pfpFile;
 
 	public User() {
 		super();
@@ -79,8 +89,9 @@ public class User {
 			String email,
 			String phoneNumber,
 			String pfpUrl,
+			String city,
 			List<Job> jobs,
-			MultipartFile pfpFile
+			String pfpFile
 			) {
 		super();
 		this.id = id;
@@ -90,6 +101,7 @@ public class User {
 		this.lastName = lastName;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
+		this.city = city;
 		this.pfpUrl = pfpUrl;
 		this.jobs = jobs;
 		this.pfpFile = pfpFile;
@@ -151,6 +163,14 @@ public class User {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
 	public String getPfpUrl() {
 		return pfpUrl;
 	}
@@ -167,11 +187,11 @@ public class User {
 		this.jobs = jobs;
 	}
 
-	public MultipartFile getPfpFile() {
+	public String getPfpFile() {
 		return pfpFile;
 	}
 
-	public void setPfpFile(MultipartFile pfpFile) {
+	public void setPfpFile(String pfpFile) {
 		this.pfpFile = pfpFile;
 	}
 
@@ -205,7 +225,8 @@ public class User {
 		buffer.append("]");
 		
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", pfpUrl=" + pfpUrl
+				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", city=" + city 
+				+ ", pfpUrl=" + pfpUrl
 				+ ", jobs=" + jobs + ", pfpFile=" + pfpFile + "]";
 	}
 	

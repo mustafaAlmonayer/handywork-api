@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 
 @Entity
-@Table(name = "job-reviews")
+@Table(name = "job_review")
 public class JobReview {
 	
 	@Id
@@ -29,7 +29,7 @@ public class JobReview {
 	@Column(name = "user_id")
 	private Long userId;
 	
-	@Column(name = "type")
+	@Column(name = "type", columnDefinition = "ENUM('JOB_REVIEW', 'USER_REVIEW')")
 	@Enumerated(EnumType.STRING)
 	private JobReviewType type;
 	
@@ -160,6 +160,5 @@ public class JobReview {
 				+ rating + ", publishDate=" + publishDate + ", updateDate=" + updateDate + ", reviewText=" + reviewText
 				+ "]";
 	}
-	
 	
 }

@@ -1,30 +1,36 @@
 use handywork;
 
-CREATE TABLE images_urls
-  (
-     job_id    BIGINT NOT NULL,
-     image_url VARCHAR(255)
-  )
-engine=innodb;
+DROP TABLE IF EXISTS image_url;
+DROP TABLE IF EXISTS job_review;
+DROP TABLE IF EXISTS job;
+DROP TABLE IF EXISTS user;
 
-CREATE TABLE `job-reviews`
+CREATE TABLE user
   (
-     id           BIGINT NOT NULL auto_increment,
-     publish_date DATETIME NOT NULL,
-     rating       TINYINT NOT NULL,
-     review_text  TEXT NOT NULL,
-     type         VARCHAR(255) NOT NULL,
-     update_date  DATETIME,
-     job_id       BIGINT NOT NULL,
-     user_id      BIGINT NOT NULL,
+     id              BIGINT NOT NULL auto_increment,
+     email           VARCHAR(255) NOT NULL,
+     city            VARCHAR(255) NOT NULL,
+     first_name      VARCHAR(36),
+     last_name       VARCHAR(36),
+     password        VARCHAR(36) NOT NULL,
+     profile_picture VARCHAR(255),
+     phone_number    VARCHAR(10) NOT NULL,
+     username        VARCHAR(36) NOT NULL,
      PRIMARY KEY (id)
   )
 engine=innodb;
 
-CREATE TABLE jobs
+ALTER TABLE user
+  ADD CONSTRAINT UNIQUE_EMAIL UNIQUE (email),
+  ADD CONSTRAINT UNIQUE_PHONE_NUMBER UNIQUE (phone_number),
+  ADD CONSTRAINT UNIQUE_USERNAME UNIQUE (username);
+
+
+CREATE TABLE job
   (
      id           BIGINT NOT NULL auto_increment,
      description  TEXT NOT NULL,
+     city         VARCHAR(255) NOT NULL,
      field        VARCHAR(50) NOT NULL,
      is_done      BIT NOT NULL DEFAULT 0,
      job_name     VARCHAR(50) NOT NULL,
@@ -37,36 +43,39 @@ CREATE TABLE jobs
   )
 engine=innodb;
 
-CREATE TABLE users
+ALTER TABLE job
+  ADD CONSTRAINT USER_DONE_BY_FOREIGN_KEY FOREIGN KEY (done_by_id) REFERENCES user (id),
+  ADD CONSTRAINT USER_OWNER_FOREIGN_KEY FOREIGN KEY (owner_id) REFERENCES user (id); 
+
+CREATE TABLE image_url
   (
-     id              BIGINT NOT NULL auto_increment,
-     email           VARCHAR(255) NOT NULL,
-     first_name      VARCHAR(36),
-     last_name       VARCHAR(36),
-     password        VARCHAR(36) NOT NULL,
-     profile_picture VARCHAR(255),
-     phone_number    VARCHAR(10) NOT NULL,
-     username        VARCHAR(36) NOT NULL,
+     id        BIGINT NOT NULL auto_increment,
+     job_id    BIGINT NOT NULL,
+     url VARCHAR(255),
      PRIMARY KEY (id)
   )
 engine=innodb;
 
-ALTER TABLE users
-  ADD CONSTRAINT UNIQUE_EMAIL UNIQUE (email);
+ALTER TABLE image_url
+  ADD CONSTRAINT JOB_FOREIGN_KEY FOREIGN KEY (job_id) REFERENCES job (id);
 
-ALTER TABLE users
-  ADD CONSTRAINT UNIQUE_PHONE_NUMBER UNIQUE (phone_number);
+CREATE TABLE job_review
+  (
+     id           BIGINT NOT NULL auto_increment,
+     publish_date DATETIME NOT NULL,
+     rating       TINYINT NOT NULL,
+     review_text  TEXT NOT NULL,
+     type         ENUM('JOB_REVIEW', 'USER_REVIEW') NOT NULL,
+     update_date  DATETIME,
+     job_id       BIGINT NOT NULL,
+     user_id      BIGINT NOT NULL,
+     PRIMARY KEY (id)
+  )
+engine=innodb;
 
-ALTER TABLE users
-  ADD CONSTRAINT UNIQUE_USERNAME UNIQUE (username);
+ALTER TABLE job_review
+  ADD CONSTRAINT JOB_FOREIGN_KEY FOREIGN KEY (job_id) REFERENCES job (id),
+  ADD CONSTRAINT USER_FOREIGN_KEY FOREIGN KEY (user_id) REFERENCES user (id);
 
-ALTER TABLE images_urls
-  ADD CONSTRAINT JOB_FOREIGN_KEY FOREIGN KEY (job_id) REFERENCES jobs (id);
 
-ALTER TABLE `job-reviews`
-  ADD CONSTRAINT JOB_FOREIGN_KEY FOREIGN KEY (job_id) REFERENCES jobs (id);
-  ADD CONSTRAINT USER_FOREIGN_KEY FOREIGN KEY (user_id) REFERENCES users (id);
 
-ALTER TABLE jobs
-  ADD CONSTRAINT USER_DONE_BY_FOREIGN_KEY FOREIGN KEY (done_by_id) REFERENCES users (id);
-  ADD CONSTRAINT USER_OWNER_FOREIGN_KEY FOREIGN KEY (owner_id) REFERENCES users (id); 

@@ -4,13 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.annotations.Cascade;
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,16 +24,14 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "jobs")
+@Table(name = "job")
 public class Job {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne(fetch = FetchType.LAZY,
-			cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
-			)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
 	private User owner;
 	
 	@Column(name = "done_by_id")
@@ -71,24 +64,26 @@ public class Job {
     @Column(name = "job_name")
     @NotNull(message = "Cannot Be Empty")
 	private String jobName;
-
-    @ElementCollection
-    @CollectionTable(name = "images_urls")
-    @Column(name = "image_url")
-    @Cascade(value = org.hibernate.annotations.CascadeType.ALL)
+    
     @JoinColumn(name = "job_id")
-	private List<String> imagesUrls;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Size(max = 5, message = "Cannot Have More than 5 images")
+	private List<ImageUrl> imagesUrls;
 
     @Column(name = "is_done")
-    @NotNull(message = "cannot be empty")
+    @NotNull(message = "Cannot Be Empty")
 	private boolean isDone;
+    
+    @Column(name="city")
+    private String city;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobId")
     @Size(max = 2)
     private List<JobReview> jobReviews;
    
 	@Transient
-	private List<MultipartFile> imagesFiles;
+    @Size(max = 5, message = "Cannot Have More than 5 images")
+	private List<String> imagesFiles;
 
 	public Job() {
 		super();
@@ -104,10 +99,11 @@ public class Job {
 			LocalDateTime publishDate,
 			LocalDateTime updateDate,
 			String jobName,
-			List<String> imagesUrls,
+			List<ImageUrl> imagesUrls,
+			String city,
 			boolean isDone,
 			List<JobReview> jobReview,
-			List<MultipartFile> imagesFiles
+			List<String> imagesFiles
 			) {
 		super();
 		this.id = id;
@@ -120,6 +116,7 @@ public class Job {
 		this.updateDate = updateDate;
 		this.jobName = jobName;
 		this.imagesUrls = imagesUrls;
+		this.city = city;
 		this.isDone = isDone;
 		this.jobReviews = jobReview;
 		this.imagesFiles = imagesFiles;
@@ -165,14 +162,6 @@ public class Job {
 		this.description = description;
 	}
 
-	public float getPrice() {
-		return pay;
-	}
-
-	public void setPrice(float price) {
-		this.pay = price;
-	}
-
 	public LocalDateTime getPublishDate() {
 		return publishDate;
 	}
@@ -197,12 +186,36 @@ public class Job {
 		this.jobName = jobName;
 	}
 
-	public List<String> getImagesUrls() {
+	public List<ImageUrl> getImagesUrls() {
 		return imagesUrls;
 	}
 
-	public void setImagesUrls(List<String> imagesUrls) {
+	public void setImagesUrls(List<ImageUrl> imagesUrls) {
 		this.imagesUrls = imagesUrls;
+	}
+	
+	public float getPay() {
+		return pay;
+	}
+
+	public void setPay(float pay) {
+		this.pay = pay;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public List<JobReview> getJobReviews() {
+		return jobReviews;
+	}
+
+	public void setJobReviews(List<JobReview> jobReviews) {
+		this.jobReviews = jobReviews;
 	}
 
 	public boolean isDone() {
@@ -213,19 +226,11 @@ public class Job {
 		this.isDone = isDone;
 	}
 
-	public List<JobReview> getJobReview() {
-		return jobReviews;
-	}
-
-	public void setJobReview(List<JobReview> jobReview) {
-		this.jobReviews = jobReview;
-	}
-
-	public List<MultipartFile> getImagesFiles() {
+	public List<String> getImagesFiles() {
 		return imagesFiles;
 	}
 
-	public void setImagesFiles(List<MultipartFile> imagesFiles) {
+	public void setImagesFiles(List<String> imagesFiles) {
 		this.imagesFiles = imagesFiles;
 	}
 
@@ -259,10 +264,11 @@ public class Job {
 		});
 		buffer.append("]");
 		
+
 		return "Job [id=" + id + ", owner=" + owner.getId() + ", doneBy=" + doneBy + ", field=" + field + ", description="
-				+ description + ", price=" + pay + ", publishDate=" + publishDate + ", updateDate=" + updateDate
-				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + isDone + ", jobReview="
-				+ buffer + ", imagesFiles=" + imagesFiles + "]";
+				+ description + ", pay=" + pay + ", publishDate=" + publishDate + ", updateDate=" + updateDate
+				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + isDone + ", city=" + city
+				+ ", jobReviews=" + buffer + ", imagesFiles=" + imagesFiles + "]";
 	}
 	
 }
