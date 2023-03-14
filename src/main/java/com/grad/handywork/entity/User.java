@@ -1,7 +1,13 @@
 package com.grad.handywork.entity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.grad.handywork.validation.UniqueEmail;
 import com.grad.handywork.validation.UniquePhoneNumber;
@@ -25,7 +31,10 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
+
+	@Transient
+	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,15 +73,15 @@ public class User {
 
 	@Column(name = "profile_picture")
 	private String pfpUrl;
-	
-	@NotNull(message =  "City Field Cannot be empty")
+
+	@NotNull(message = "City Field Cannot be empty")
 	@Size(message = "City Field Cannot Be Less than 3")
 	@Column(name = "city")
 	private String city;
 
 	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Job> jobs;
-	
+
 	@Transient
 	private String pfpFile;
 
@@ -80,19 +89,8 @@ public class User {
 		super();
 	}
 
-	public User(
-			Long id,
-			String username,
-			String password,
-			String firstName,
-			String lastName,
-			String email,
-			String phoneNumber,
-			String pfpUrl,
-			String city,
-			List<Job> jobs,
-			String pfpFile
-			) {
+	public User(Long id, String username, String password, String firstName, String lastName, String email,
+			String phoneNumber, String pfpUrl, String city, List<Job> jobs, String pfpFile) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -115,6 +113,7 @@ public class User {
 		this.id = id;
 	}
 
+	@Override
 	public String getUsername() {
 		return username;
 	}
@@ -123,6 +122,7 @@ public class User {
 		this.username = username;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
@@ -215,7 +215,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		
+
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
 		jobs.forEach(job -> {
@@ -223,11 +223,35 @@ public class User {
 			buffer.append(", ");
 		});
 		buffer.append("]");
-		
+
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", city=" + city 
-				+ ", pfpUrl=" + pfpUrl
-				+ ", jobs=" + jobs + ", pfpFile=" + pfpFile + "]";
+				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", city=" + city
+				+ ", pfpUrl=" + pfpUrl + ", jobs=" + jobs + ", pfpFile=" + pfpFile + "]";
 	}
-	
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(new SimpleGrantedAuthority("USER"));
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 }
