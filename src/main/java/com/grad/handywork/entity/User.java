@@ -9,6 +9,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.grad.handywork.validation.UniqueEmail;
 import com.grad.handywork.validation.UniquePhoneNumber;
 import com.grad.handywork.validation.UniqueUsername;
@@ -79,7 +80,8 @@ public class User implements UserDetails {
 	@Column(name = "city")
 	private String city;
 
-	@OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JsonIgnore
+	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
 	private List<Job> jobs;
 
 	@Transient
@@ -215,18 +217,9 @@ public class User implements UserDetails {
 
 	@Override
 	public String toString() {
-
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("[");
-		jobs.forEach(job -> {
-			buffer.append(job.getId());
-			buffer.append(", ");
-		});
-		buffer.append("]");
-
 		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", city=" + city
-				+ ", pfpUrl=" + pfpUrl + ", jobs=" + jobs + ", pfpFile=" + pfpFile + "]";
+				+ ", pfpUrl=" + pfpUrl + ", pfpFile=" + pfpFile + "]";
 	}
 
 	@Override

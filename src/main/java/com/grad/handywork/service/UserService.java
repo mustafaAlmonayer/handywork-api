@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.repo.UserRepository;
 
@@ -11,16 +12,26 @@ import com.grad.handywork.repo.UserRepository;
 public class UserService {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private CloudinaryService cloudinaryService;
+	
+	@Autowired
+	private JwtService jwtService;
 
-	public User saveUser(User user) {
-
+	public AuthDto saveUser(User user) {
+		user.setPfpUrl(cloudinaryService.imageToUrl(user.getPfpFile()));
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
-
-		return userRepository.save(user);
+		User savedUser = userRepository.save(user);
+		String jwtToken =jwtService.generateToken(savedUser);
+		return AuthDto
+				.builder()
+				.token(jwtToken)
+				.build();
 	}
 
 }

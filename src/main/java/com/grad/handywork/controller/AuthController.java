@@ -3,34 +3,25 @@ package com.grad.handywork.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.LoginDto;
+import com.grad.handywork.service.AuthService;
 
 @RestController
+@RequestMapping("/v1")
 public class AuthController {
-
+	
 	@Autowired
-	private AuthenticationManager authenticationManager;
+	private AuthService authService;
 
-	@PostMapping("/auth")
-	public ResponseEntity<Authentication> authenticateUser(@RequestBody LoginDto loginDto) {
-		
-		System.out.println(loginDto.getPassword());
-		Authentication authentication = authenticationManager
-				.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
-		
-	
-	
-
-		SecurityContextHolder.getContext().setAuthentication(authentication);
-		return new ResponseEntity<>(authentication, HttpStatus.OK);
+	@PostMapping("/authenticate")
+	public ResponseEntity<AuthDto> login(@RequestBody LoginDto loginDto) {
+		return new ResponseEntity<>(authService.authinticate(loginDto), HttpStatus.OK);
 	}
 
 }

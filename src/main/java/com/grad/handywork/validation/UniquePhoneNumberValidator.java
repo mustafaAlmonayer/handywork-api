@@ -10,7 +10,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class UniquePhoneNumberValidator implements ConstraintValidator<UniquePhoneNumber, String> {
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 	
     @Override
     public void initialize(UniquePhoneNumber constraintAnnotation) {

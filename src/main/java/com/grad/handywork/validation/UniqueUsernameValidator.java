@@ -10,7 +10,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class UniqueUsernameValidator implements ConstraintValidator<UniqueUsername, String> {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Override
 	public void initialize(UniqueUsername constraintAnnotation) {

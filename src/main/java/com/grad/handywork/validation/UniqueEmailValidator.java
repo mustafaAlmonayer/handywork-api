@@ -10,7 +10,7 @@ import jakarta.validation.ConstraintValidatorContext;
 public class UniqueEmailValidator implements ConstraintValidator<UniqueEmail, String> {
 
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 
 	@Override
 	public void initialize(UniqueEmail constraintAnnotation) {
