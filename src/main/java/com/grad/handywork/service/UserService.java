@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.entity.User;
+import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.repo.UserRepository;
 
 @Service
@@ -16,10 +17,10 @@ public class UserService {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
-	
+
 	@Autowired
 	private CloudinaryService cloudinaryService;
-	
+
 	@Autowired
 	private JwtService jwtService;
 
@@ -27,11 +28,13 @@ public class UserService {
 		user.setPfpUrl(cloudinaryService.imageToUrl(user.getPfpFile()));
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		User savedUser = userRepository.save(user);
-		String jwtToken =jwtService.generateToken(savedUser);
-		return AuthDto
-				.builder()
-				.token(jwtToken)
-				.build();
+		String jwtToken = jwtService.generateToken(savedUser);
+		return AuthDto.builder().token(jwtToken).build();
+	}
+
+	public User getUser(String username) {
+		return userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException(username));
 	}
 
 }
