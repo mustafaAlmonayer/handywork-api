@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import com.grad.handywork.entity.Job;
 
-@Repository
+@Repository("JobRepository")
 public interface JobRepository extends JpaRepository<Job, Long>{
 
 }

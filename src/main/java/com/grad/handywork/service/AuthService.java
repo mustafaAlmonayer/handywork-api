@@ -11,7 +11,7 @@ import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.repo.UserRepository;
 
-@Service
+@Service("AuthService")
 public class AuthService {
 	
 	@Autowired
