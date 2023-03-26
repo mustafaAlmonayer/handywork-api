@@ -12,10 +12,13 @@ import com.grad.handywork.entity.User;
 import com.grad.handywork.service.CloudinaryService;
 import com.grad.handywork.service.JwtService;
 
+import lombok.RequiredArgsConstructor;
+
 @Aspect
+@RequiredArgsConstructor
 public class UserAspect {
 	
-	private final String DEFAULT_PFP_URL = "";
+	private final String DEFAULT_PFP_URL;
 	
 	@Autowired
 	private JwtService jwtService;
@@ -26,7 +29,7 @@ public class UserAspect {
 	@Autowired
 	private PasswordEncoder  passwordEncoder;
 	
-	@Pointcut("execution(* com.grad.handywork.service.UserService.saveUser(User))")
+	@Pointcut("execution(* com.grad.handywork.service.UserService.saveUser(com.grad.handywork.entity.User))")
 	public void saveUserPointCut() {}
 	
 	@Before("saveUserPointCut()")
@@ -34,7 +37,7 @@ public class UserAspect {
 		User user = (User)joinPoint.getArgs()[0];
 		String base64File = user.getPfpFile();
 		if(base64File == null || base64File.isEmpty()) {
-			 user.setPfpFile(DEFAULT_PFP_URL);
+			 user.setPfpUrl(DEFAULT_PFP_URL);
 			 return;
 		}
 		user.setPfpUrl(cloudinaryService.imageToUrl(user.getPfpFile()));
@@ -52,5 +55,5 @@ public class UserAspect {
 		if(!jwtService.extractUsername(bearerToken).equals(username)) 
 			throw new ResourceAccessException(username + ": Is Not The Resource Owner");
 	}
-
+	
 }

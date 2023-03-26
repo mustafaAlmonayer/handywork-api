@@ -9,16 +9,17 @@ import java.util.function.Function;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
-@Service
+@Service("JwtService")
 public class JwtService {
 	
-	private static final String SIGN_IN_KEY = "7436773979244226452948404D635166546A576E5A7234753778214125432A46";
+	private static final String SIGN_IN_KEY = Dotenv.load().get("SIGN_IN_KEY");
 
 	public String extractUsername(String jwtToken) {
 		return extractClaim(jwtToken, Claims::getSubject);
