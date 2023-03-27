@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grad.handywork.dto.AuthDto;
+import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.service.UserService;
 
@@ -30,7 +31,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{username}")
-	public ResponseEntity<User> getUser(@PathVariable String username, @RequestHeader("Authorization") String BearerToken) {
+	public ResponseEntity<UserDto> getUser(@PathVariable String username, @RequestHeader("Authorization") String BearerToken) {
 		return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
 	}
 
