@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.ResourceAccessException;
 
-import com.grad.handywork.entity.User;
+import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.service.CloudinaryService;
 import com.grad.handywork.service.JwtService;
 
@@ -29,19 +29,19 @@ public class UserAspect {
 	@Autowired
 	private PasswordEncoder  passwordEncoder;
 	
-	@Pointcut("execution(* com.grad.handywork.service.UserService.saveUser(com.grad.handywork.entity.User))")
+	@Pointcut("execution(* com.grad.handywork.service.UserService.saveUser(com.grad.handywork.dto.UserDto))")
 	public void saveUserPointCut() {}
 	
 	@Before("saveUserPointCut()")
 	public void beforeSaveUser(JoinPoint joinPoint) {
-		User user = (User)joinPoint.getArgs()[0];
-		String base64File = user.getPfpFile();
+		UserDto userDto = (UserDto)joinPoint.getArgs()[0];
+		String base64File = userDto.getPfpFile();
+		userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
 		if(base64File == null || base64File.isEmpty()) {
-			 user.setPfpUrl(DEFAULT_PFP_URL);
+			 userDto.setPfpUrl(DEFAULT_PFP_URL);
 			 return;
 		}
-		user.setPfpUrl(cloudinaryService.imageToUrl(user.getPfpFile()));
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
+		userDto.setPfpUrl(cloudinaryService.imageToUrl(userDto.getPfpFile()));
 	}
 	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.getUser(String, String))")

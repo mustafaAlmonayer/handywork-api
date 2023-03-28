@@ -22,6 +22,7 @@
 		<com.cloudinary.version>1.32.2</com.cloudinary.version>
 		<io.github.cdimascio.version>2.2.4</io.github.cdimascio.version>
 		<org.projectlombok.version>1.18.26</org.projectlombok.version>
+		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 	</properties>
 	
 	<dependencies>
@@ -59,6 +60,11 @@
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
 			<version>${org.mapstruct.version}</version>
+		</dependency>
+		<dependency>
+    		<groupId>org.mapstruct</groupId>
+    		<artifactId>mapstruct-processor</artifactId>
+    		<version>${org.mapstruct.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>

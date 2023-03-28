@@ -22,8 +22,8 @@ public class UserService {
 	@Autowired
 	private JwtService jwtService;
 
-	public AuthDto saveUser(User user) {
-		User savedUser = userRepository.save(user);
+	public AuthDto saveUser(UserDto user) {
+		User savedUser = userRepository.save(userMapper.userDtoToUserWithoutId(user));
 		String jwtToken = jwtService.generateToken(savedUser);
 		return AuthDto.builder().token(jwtToken).build();
 	}
@@ -31,7 +31,7 @@ public class UserService {
 	public UserDto getUser(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));
-		return userMapper.userToUserDto(user);
+		return userMapper.userToUserDtoWithoutIdandPassword(user);
 	}
 
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.UserDto;
-import com.grad.handywork.entity.User;
 import com.grad.handywork.service.UserService;
 
 import jakarta.validation.Valid;
@@ -26,8 +25,8 @@ public class UserController {
 	private UserService userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<AuthDto> register(@RequestBody @Valid User user) {
-		return new ResponseEntity<>(userService.saveUser(user), HttpStatus.OK);
+	public ResponseEntity<AuthDto> register(@RequestBody @Valid UserDto userDto) {
+		return new ResponseEntity<>(userService.saveUser(userDto), HttpStatus.OK);
 	}
 
 	@GetMapping("/{username}")
