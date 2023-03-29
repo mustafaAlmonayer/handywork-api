@@ -75,7 +75,7 @@ public class User implements UserDetails {
 	private String pfpUrl;
 
 	@NotNull(message = "City Field Cannot be empty")
-	@Size(message = "City Field Cannot Be Less than 3")
+	@Size(min =3, message = "City Field Cannot Be Less than 3")
 	@Column(name = "city")
 	private String city;
 

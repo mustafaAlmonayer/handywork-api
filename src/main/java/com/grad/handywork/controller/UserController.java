@@ -3,6 +3,7 @@ package com.grad.handywork.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,8 +16,6 @@ import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.service.UserService;
 
-import jakarta.validation.Valid;
-
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
@@ -25,7 +24,7 @@ public class UserController {
 	private UserService userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<AuthDto> register(@RequestBody @Valid UserDto userDto) {
+	public ResponseEntity<AuthDto> register(@RequestBody @Validated UserDto userDto) {
 		return new ResponseEntity<>(userService.saveUser(userDto), HttpStatus.OK);
 	}
 

@@ -1,6 +1,8 @@
 package com.grad.handywork.exception;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,36 +15,41 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.grad.handywork.dto.ErrorDetailsDto;
+import com.grad.handywork.dto.ErrorDetailsForValidationtDto;
+
 @RestControllerAdvice
 public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public final ResponseEntity<ErrorDetails> handleResourceNotFoundExceptionGet(Exception ex, WebRequest request)
+	public final ResponseEntity<ErrorDetailsDto> handleResourceNotFoundExceptionGet(Exception ex, WebRequest request)
 			throws Exception {
-		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+		ErrorDetailsDto errorDetailsDto = new ErrorDetailsDto(LocalDateTime.now(), ex.getMessage(),
 				request.getDescription(false));
-		return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(errorDetailsDto, HttpStatus.NOT_FOUND);
 	}
 	
 	@ExceptionHandler(ResourceAccessException.class)
-	public final ResponseEntity<ErrorDetails> handleResourceAccessException(Exception ex, WebRequest request) throws Exception {
-		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+	public final ResponseEntity<ErrorDetailsDto> handleResourceAccessException(Exception ex, WebRequest request) throws Exception {
+		ErrorDetailsDto errorDetails = new ErrorDetailsDto(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
 	
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-
-		StringBuffer buffer = new StringBuffer();
-
+		Map<String, String> errorFieldAndDetails = new HashMap<>();
 		ex.getFieldErrors().stream().forEach(
-				error -> buffer.append(error.getField()).append(": ").append(error.getDefaultMessage()).append(", "));
-
-		ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), buffer.toString().substring(0, buffer.length()-2),
-				request.getDescription(false));
-
-		return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+				error -> errorFieldAndDetails.put(error.getField(), error.getDefaultMessage())
+		);
+		ErrorDetailsForValidationtDto errorDetailsForValidationtDto = 
+				ErrorDetailsForValidationtDto
+					.builder()
+					.timestamp(LocalDateTime.now())
+					.message(errorFieldAndDetails)
+					.details(request.getDescription(false))
+					.build();
+		return new ResponseEntity<>(errorDetailsForValidationtDto, HttpStatus.BAD_REQUEST);
 	}
 	
 }
