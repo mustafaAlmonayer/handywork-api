@@ -45,9 +45,7 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 		ErrorDetailsForValidationtDto errorDetailsForValidationtDto = 
 				ErrorDetailsForValidationtDto
 					.builder()
-					.timestamp(LocalDateTime.now())
 					.message(errorFieldAndDetails)
-					.details(request.getDescription(false))
 					.build();
 		return new ResponseEntity<>(errorDetailsForValidationtDto, HttpStatus.BAD_REQUEST);
 	}

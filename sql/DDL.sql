@@ -34,7 +34,6 @@ CREATE TABLE job
      field        VARCHAR(50) NOT NULL,
      is_done      BIT NOT NULL DEFAULT 0,
      job_name     VARCHAR(50) NOT NULL,
-     pay          DECIMAL(6, 2) NOT NULL,
      publish_date DATETIME NOT NULL,
      update_date  DATETIME,
      done_by_id   BIGINT,
@@ -49,10 +48,8 @@ ALTER TABLE job
 
 CREATE TABLE image_url
   (
-     id        BIGINT NOT NULL auto_increment,
      job_id    BIGINT NOT NULL,
-     url VARCHAR(255),
-     PRIMARY KEY (id)
+     url       VARCHAR(255)
   )
 engine=innodb;
 

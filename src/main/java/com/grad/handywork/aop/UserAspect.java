@@ -49,6 +49,10 @@ public class UserAspect {
 	
 	@Before("getUserPointCut()")
 	public void beforeGetUser(JoinPoint joinPoint) {
+		security(joinPoint);
+	}
+	
+	private void security(JoinPoint joinPoint) {
 		String username = (String)joinPoint.getArgs()[0];
 		String token = (String)joinPoint.getArgs()[1];
 		String bearerToken = token.substring(7);

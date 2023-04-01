@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Objects;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,9 +17,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-import jakarta.validation.constraints.Digits;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
@@ -32,10 +30,12 @@ public class Job {
 	private Long id;
 	
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "owner_id")
 	private User owner;
 	
-	@Column(name = "done_by_id")
-	private Long doneBy;
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "done_by_id")
+	private User doneBy;
 
     @Column(name = "field")
     @NotNull(message = "\"Field\" Field cannot be empty")
@@ -45,13 +45,6 @@ public class Job {
     @NotNull(message = "Description Field Cannot Be Empty")
     @Size(min = 15, message =  "Description Field Cannot Be Less Than 15")
 	private String description;
-
-    @Column(name = "pay", columnDefinition = "DECIMAL(6,2)")
-    @Min(value = 0, message = "Price Field Cannot Be Less Than 0")
-    @Max(value = 999999, message = "Price Field Cannot Be Higher Than 999999")
-    @Digits(integer = 6, fraction = 2, message = "Price Field Max Number Of Digits Is 6, Fraction Is 2")
-    @NotNull(message = "Price Field Cannot Be Empty")
-	private float pay;
 
     @Column(name = "publish_date")
     @Past
@@ -66,13 +59,15 @@ public class Job {
 	private String jobName;
     
     @JoinColumn(name = "job_id")
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ElementCollection
+    @CollectionTable(name = "image_url")
+    @Column(name = "url")
     @Size(max = 5, message = "Cannot Have More than 5 images")
-	private List<ImageUrl> imagesUrls;
+	private List<String> imagesUrls;
 
     @Column(name = "is_done")
     @NotNull(message = "Cannot Be Empty")
-	private boolean isDone;
+	private boolean done;
     
     @Column(name="city")
     private String city;
@@ -92,14 +87,13 @@ public class Job {
 	public Job(
 			Long id,
 			User owner,
-			Long doneBy,
+			User doneBy,
 			String field,
 			String description,
-			float price,
 			LocalDateTime publishDate,
 			LocalDateTime updateDate,
 			String jobName,
-			List<ImageUrl> imagesUrls,
+			List<String> imagesUrls,
 			String city,
 			boolean isDone,
 			List<JobReview> jobReview,
@@ -111,13 +105,12 @@ public class Job {
 		this.doneBy = doneBy;
 		this.field = field;
 		this.description = description;
-		this.pay = price;
 		this.publishDate = publishDate;
 		this.updateDate = updateDate;
 		this.jobName = jobName;
 		this.imagesUrls = imagesUrls;
 		this.city = city;
-		this.isDone = isDone;
+		this.done = isDone;
 		this.jobReviews = jobReview;
 		this.imagesFiles = imagesFiles;
 	}
@@ -138,11 +131,11 @@ public class Job {
 		this.owner = owner;
 	}
 
-	public Long getDoneBy() {
+	public User getDoneBy() {
 		return doneBy;
 	}
 
-	public void setDoneBy(Long doneBy) {
+	public void setDoneBy(User doneBy) {
 		this.doneBy = doneBy;
 	}
 
@@ -186,20 +179,12 @@ public class Job {
 		this.jobName = jobName;
 	}
 
-	public List<ImageUrl> getImagesUrls() {
+	public List<String> getImagesUrls() {
 		return imagesUrls;
 	}
 
-	public void setImagesUrls(List<ImageUrl> imagesUrls) {
+	public void setImagesUrls(List<String> imagesUrls) {
 		this.imagesUrls = imagesUrls;
-	}
-	
-	public float getPay() {
-		return pay;
-	}
-
-	public void setPay(float pay) {
-		this.pay = pay;
 	}
 
 	public String getCity() {
@@ -219,11 +204,11 @@ public class Job {
 	}
 
 	public boolean isDone() {
-		return isDone;
+		return done;
 	}
 
 	public void setDone(boolean isDone) {
-		this.isDone = isDone;
+		this.done = isDone;
 	}
 
 	public List<String> getImagesFiles() {
@@ -236,7 +221,7 @@ public class Job {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(doneBy, id, owner.getId(), pay);
+		return Objects.hash(doneBy.getId(), id, owner.getId());
 	}
 
 	@Override
@@ -248,9 +233,8 @@ public class Job {
 		if (getClass() != obj.getClass())
 			return false;
 		Job other = (Job) obj;
-		return Objects.equals(doneBy, other.doneBy) && Objects.equals(id, other.id)
-				&& Objects.equals(owner.getId(), other.owner.getId())
-				&& Double.doubleToLongBits(pay) == Double.doubleToLongBits(other.pay);
+		return Objects.equals(doneBy.getId(), other.doneBy.getId()) && Objects.equals(id, other.id)
+				&& Objects.equals(owner.getId(), other.owner.getId());
 	}
 
 	@Override
@@ -265,9 +249,9 @@ public class Job {
 		buffer.append("]");
 		
 
-		return "Job [id=" + id + ", owner=" + owner.getId() + ", doneBy=" + doneBy + ", field=" + field + ", description="
-				+ description + ", pay=" + pay + ", publishDate=" + publishDate + ", updateDate=" + updateDate
-				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + isDone + ", city=" + city
+		return "Job [id=" + id + ", owner=" + owner.getId() + ", doneBy=" + doneBy.getId() + ", field=" + field + ", description="
+				+ description + " + , publishDate=" + publishDate + ", updateDate=" + updateDate
+				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + done + ", city=" + city
 				+ ", jobReviews=" + buffer + ", imagesFiles=" + imagesFiles + "]";
 	}
 	
