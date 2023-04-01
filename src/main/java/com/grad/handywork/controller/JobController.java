@@ -40,7 +40,7 @@ public class JobController {
 
 	@PostMapping("/user/{username}/job/save")
 	public ResponseEntity<JobDto> saveJob(@Validated @RequestBody Job job,
-			@RequestHeader("Authorization") String BearerToken, @PathVariable String username) {
+			 @PathVariable String username, @RequestHeader("Authorization") String BearerToken) {
 		return new ResponseEntity<>(jobService.saveJob(job, username), HttpStatus.OK);
 	}
 
