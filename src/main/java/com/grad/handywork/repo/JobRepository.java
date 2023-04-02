@@ -1,7 +1,7 @@
 package com.grad.handywork.repo;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +10,10 @@ import com.grad.handywork.entity.Job;
 @Repository("JobRepository")
 public interface JobRepository extends JpaRepository<Job, Long>{
 	
-	List<Job> findByFieldAndJobName(String field, String name);
+	Page<Job> findByFieldAndCity(String field, String city, PageRequest pageRequest);
 	
-	List<Job> findByField(String field);
+	Page<Job> findByField(String field, PageRequest pageRequest);
 	
-	List<Job> findByJobName(String name);
+	Page<Job> findByCity(String city, PageRequest pageRequest);
 
 }

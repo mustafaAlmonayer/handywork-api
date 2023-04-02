@@ -6,6 +6,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.JobDto;
@@ -42,7 +46,6 @@ public class JobService {
 		job.setOwner(dbUser);
 		if(job.getImagesFiles() == null || job.getImagesFiles().get(0) == "") {
 			List<String> imageUrls = new ArrayList<>();
-			System.out.println("defalt \n\n\n");
 			imageUrls.add(DEFAULT_JOB_URL);
 			job.setImagesUrls(imageUrls);
 		} else {
@@ -59,16 +62,16 @@ public class JobService {
 		return jobMapper.jobToJobDto(job);
 	}
 	
-	public List<JobDto> getAllByFieldAndName(String field, String name) {
-		List<Job> jobs;
-		if (field.equals("") && name.equals("")) {
-			jobs = jobRepository.findAll();
-		} else if (field.equals("") && !name.equals("")) {
-			jobs = jobRepository.findByJobName(name);
-		} else if (!field.equals("") && name.equals("")) {
-			jobs = jobRepository.findByField(field);
+	public List<JobDto> getAllByFieldAndCity(String field, String city, Integer page) {
+		Page<Job> jobs;
+		if (field.equals("") && city.equals("")) {
+			jobs = jobRepository.findAll(PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+		} else if (field.equals("") && !city.equals("")) {
+			jobs = jobRepository.findByCity(city, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+		} else if (!field.equals("") && city.equals("")) {
+			jobs = jobRepository.findByField(field, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else {
-			jobs = jobRepository.findByFieldAndJobName(field, name);
+			jobs = jobRepository.findByFieldAndCity(field, city, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		}
 		List<JobDto> dtos = new ArrayList<>();
 		jobs.stream()

@@ -1,12 +1,17 @@
 package com.grad.handywork.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.AuthDto;
+import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
+import com.grad.handywork.mapper.JobMapper;
 import com.grad.handywork.mapper.UserMapper;
 import com.grad.handywork.repo.UserRepository;
 
@@ -21,6 +26,9 @@ public class UserService {
 
 	@Autowired
 	private JwtService jwtService;
+	
+	@Autowired
+	private JobMapper jobMapper;
 
 	public AuthDto saveUser(UserDto user) {
 		User savedUser = userRepository.save(userMapper.userDtoToUserWithoutId(user));
@@ -32,6 +40,18 @@ public class UserService {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));
 		return userMapper.userToUserDtoWithoutIdandPassword(user);
+	}
+	
+	public List<JobDto> getAllJobsByUsername(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException(username));
+		List<JobDto> dtos = new ArrayList<>();
+		user.getJobs().stream()
+			.forEach(
+					(job) -> dtos.add(jobMapper.jobToJobDto(job))
+			);
+		return dtos;
+				
 	}
 
 }

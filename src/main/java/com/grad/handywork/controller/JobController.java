@@ -28,16 +28,16 @@ public class JobController {
 	@Autowired
 	private JobService jobService;
 
-	@GetMapping("/job/all")
-	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam String field, @RequestParam String name) {
-		return new ResponseEntity<>(jobService.getAllByFieldAndName(field, name), HttpStatus.OK);
+	@GetMapping("/job/all/page/{num}")
+	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam String field, @RequestParam String city, @PathVariable Integer num) {
+		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, num), HttpStatus.OK);
 	}
 
 	@GetMapping("/job/{id}")
 	public ResponseEntity<JobDto> getJobById(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.gtJobById(id), HttpStatus.OK);
 	}
-
+	
 	@PostMapping("/user/{username}/job/save")
 	public ResponseEntity<JobDto> saveJob(@Validated @RequestBody Job job,
 			 @PathVariable String username, @RequestHeader("Authorization") String BearerToken) {
