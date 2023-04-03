@@ -29,7 +29,7 @@ public class JobController {
 	private JobService jobService;
 
 	@GetMapping("/job/all/page/{num}")
-	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam String field, @RequestParam String city, @PathVariable Integer num) {
+	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam(required = false) String field, @RequestParam(required = false) String city, @PathVariable Integer num) {
 		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, num), HttpStatus.OK);
 	}
 

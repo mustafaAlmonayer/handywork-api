@@ -10,10 +10,12 @@ import com.grad.handywork.entity.Job;
 @Repository("JobRepository")
 public interface JobRepository extends JpaRepository<Job, Long>{
 	
-	Page<Job> findByFieldAndCity(String field, String city, PageRequest pageRequest);
+	Page<Job> findAllByDone(boolean done, PageRequest pageRequest);
 	
-	Page<Job> findByField(String field, PageRequest pageRequest);
+	Page<Job> findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDone(String field, String city, boolean done, PageRequest pageRequest);
 	
-	Page<Job> findByCity(String city, PageRequest pageRequest);
+	Page<Job> findByFieldIsLikeIgnoreCaseAndDone(String field, boolean done, PageRequest pageRequest);
+	
+	Page<Job> findByCityIsLikeIgnoreCaseAndDone(String city, boolean done, PageRequest pageRequest);
 
 }

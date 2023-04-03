@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobUpdateDto;
@@ -64,14 +65,14 @@ public class JobService {
 	
 	public List<JobDto> getAllByFieldAndCity(String field, String city, Integer page) {
 		Page<Job> jobs;
-		if (field.equals("") && city.equals("")) {
-			jobs = jobRepository.findAll(PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
-		} else if (field.equals("") && !city.equals("")) {
-			jobs = jobRepository.findByCity(city, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
-		} else if (!field.equals("") && city.equals("")) {
-			jobs = jobRepository.findByField(field, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+		if (!StringUtils.hasText(field) && !StringUtils.hasText(city)) {
+			jobs = jobRepository.findAllByDone(false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+		} else if (!StringUtils.hasText(field) && StringUtils.hasText(city)) {
+			jobs = jobRepository.findByCityIsLikeIgnoreCaseAndDone("%"+city+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+		} else if (StringUtils.hasText(field) && !StringUtils.hasText(city)) {
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndDone("%"+field+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else {
-			jobs = jobRepository.findByFieldAndCity(field, city, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDone("%"+field+"%", "%"+city+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		}
 		List<JobDto> dtos = new ArrayList<>();
 		jobs.stream()

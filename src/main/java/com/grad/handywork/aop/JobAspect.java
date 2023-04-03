@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.ResourceAccessException;
 
 import com.grad.handywork.entity.Job;
-import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.repo.JobRepository;
-import com.grad.handywork.repo.UserRepository;
 import com.grad.handywork.service.CloudinaryService;
 import com.grad.handywork.service.JwtService;
 
@@ -24,9 +22,6 @@ public class JobAspect {
 	JwtService jwtService;
 	
 	@Autowired CloudinaryService cloudinaryService;
-	
-	@Autowired
-	UserRepository userRepository;
 	
 	@Autowired
 	JobRepository jobRepository;
@@ -59,11 +54,8 @@ public class JobAspect {
 		Job dbJob = jobRepository.findById(id).orElseThrow(
 				() -> new ResourceNotFoundException("Job Not Found")
 		);
-		User user = userRepository.findById(dbJob.getOwner().getId()).orElseThrow(
-				() -> new ResourceNotFoundException("User Not Found")
-		);
-		if(!jwtService.extractUsername(bearerToken).equals(user.getUsername()))
-			throw new ResourceAccessException(user.getUsername() + ": Is Not The Resource Owner");
+		if(!jwtService.extractUsername(bearerToken).equals(dbJob.getOwner().getUsername()))
+			throw new ResourceAccessException(dbJob.getOwner().getUsername() + ": Is Not The Resource Owner");
 	}
 	
 }
