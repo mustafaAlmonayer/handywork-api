@@ -51,7 +51,7 @@ public class UserService {
 	public List<JobDto> getAllJobsByUsername(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));
-		List<Job> jobs = jobRepository.findAllByOwnerId(user.getId(), Sort.by("updateDate", "publishDate").descending());
+		List<Job> jobs = jobRepository.findAllByOwnerId(user.getId(), Sort.by("publishDate").descending());
 		List<JobDto> dtos = new ArrayList<>();
 		jobs.stream()
 			.forEach(
