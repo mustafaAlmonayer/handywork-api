@@ -129,6 +129,7 @@ public class Job {
 
 	public void setOwner(User owner) {
 		this.owner = owner;
+		owner.getJobs().add(this);
 	}
 
 	public User getDoneBy() {

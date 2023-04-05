@@ -1,5 +1,6 @@
 package com.grad.handywork.entity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -80,7 +81,7 @@ public class User implements UserDetails {
 	private String city;
 
 	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-	private List<Job> jobs;
+	private List<Job> jobs = new ArrayList<>();
 
 	@Transient
 	private String pfpFile;
