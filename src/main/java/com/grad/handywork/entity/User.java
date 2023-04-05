@@ -183,6 +183,14 @@ public class User implements UserDetails {
 	public List<Job> getJobs() {
 		return jobs;
 	}
+	
+	public void addJob(Job job) {
+		this.jobs.add(job);
+	}
+	
+	public void removeJob(Job job) {
+		this.jobs.remove(job);
+	}
 
 	public void setJobs(List<Job> jobs) {
 		this.jobs = jobs;
