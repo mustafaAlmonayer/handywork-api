@@ -4,15 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.UserDto;
+import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.mapper.JobMapper;
 import com.grad.handywork.mapper.UserMapper;
+import com.grad.handywork.repo.JobRepository;
 import com.grad.handywork.repo.UserRepository;
 
 @Service
@@ -26,6 +29,9 @@ public class UserService {
 
 	@Autowired
 	private JwtService jwtService;
+	
+	@Autowired
+	private JobRepository jobRepository;
 	
 	@Autowired
 	private JobMapper jobMapper;
@@ -45,8 +51,9 @@ public class UserService {
 	public List<JobDto> getAllJobsByUsername(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));
+		List<Job> jobs = jobRepository.findAllByOwnerId(user.getId(), Sort.by("updateDate", "publishDate").descending());
 		List<JobDto> dtos = new ArrayList<>();
-		user.getJobs().stream()
+		jobs.stream()
 			.forEach(
 					(job) -> dtos.add(jobMapper.jobToJobDto(job))
 			);
