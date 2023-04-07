@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.ResourceAccessException;
 
+import com.grad.handywork.dto.PasswordDto;
+import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.service.CloudinaryService;
 import com.grad.handywork.service.JwtService;
@@ -44,12 +46,58 @@ public class UserAspect {
 		userDto.setPfpUrl(cloudinaryService.imageToUrl(userDto.getPfpFile()));
 	}
 	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.getUser(String, String))")
-	public void getUserPointCut() {}
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateUsername(String, String, com.grad.handywork.dto.UsernameDto))")
+	public void updateUsernamePointCut() {}
 	
-	@Before("getUserPointCut()")
-	public void beforeGetUser(JoinPoint joinPoint) {
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateEmail(String, String, com.grad.handywork.dto.EmailDto))")
+	public void updateEmailPointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePhoneNumber(String, String, com.grad.handywork.dto.PhoneNumberDto))")
+	public void updatePhoneNumberPointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePassword(String, String, com.grad.handywork.dto.PasswordDto))")
+	public void updatePasswordPointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateCity(String, String, com.grad.handywork.dto.CityDto))")
+	public void updateCityPointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateFirstAndLastName(String, String, com.grad.handywork.dto.FirstAndLastNameDto))")
+	public void updateFirstAndLastNamePointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePfpUrl(String, String, com.grad.handywork.dto.PfpFileDto))")
+	public void updatePfpUrlPointCut() {}
+	
+	@Pointcut("updateUsernamePointCut()"
+			+ "||"
+			+ " updateEmailPointCut()"
+			+ "||"
+			+ "updatePhoneNumberPointCut()"
+			+ "||"
+			+ "updatePasswordPointCut()"
+			+ "||"
+			+ "updateCityPointCut()"
+			+ "||"
+			+ "updateFirstAndLastNamePointCut()"
+			+ "||"
+			+ "updatePfpUrlPointCut()")
+	public void updateAllPointCut() {}
+	
+	@Before("updateAllPointCut()")
+	public void beforeUpdate(JoinPoint joinPoint) {
+		System.out.println("from point cut security");
 		security(joinPoint);
+	}
+	
+	@Before("updatePasswordPointCut()")
+	public void beforeUpdatePassword(JoinPoint joinPoint) {
+		PasswordDto passwordDto = (PasswordDto) joinPoint.getArgs()[2];
+		passwordDto.setEncodedPassword(passwordEncoder.encode(passwordDto.getPassword()));
+	}
+	
+	@Before("updatePfpUrlPointCut()")
+	public void beforeUpdatePfpUrl(JoinPoint joinPoint) {
+		PfpFileDto pfpFileDto = (PfpFileDto) joinPoint.getArgs()[2];
+		pfpFileDto.setPfpUrl(cloudinaryService.imageToUrl(pfpFileDto.getPfpFile()));
 	}
 	
 	private void security(JoinPoint joinPoint) {

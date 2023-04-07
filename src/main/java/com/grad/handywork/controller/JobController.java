@@ -28,9 +28,9 @@ public class JobController {
 	@Autowired
 	private JobService jobService;
 
-	@GetMapping("/job/all/page/{num}")
-	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam(required = false) String field, @RequestParam(required = false) String city, @PathVariable Integer num) {
-		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, num), HttpStatus.OK);
+	@GetMapping("/job/all")
+	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam(required = false) String field, @RequestParam(required = false) String city, @RequestParam(required = true) Integer page) {
+		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, page), HttpStatus.OK);
 	}
 
 	@GetMapping("/job/{id}")
