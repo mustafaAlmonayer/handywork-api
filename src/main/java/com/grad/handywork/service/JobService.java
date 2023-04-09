@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobUpdateDto;
 import com.grad.handywork.entity.Job;
@@ -40,6 +41,9 @@ public class JobService {
 	@Autowired
 	CloudinaryService cloudinaryService;
 	
+	@Autowired
+	JwtService jwtService;
+	
 	public JobDto saveJob(Job job, String username) {
 		User dbUser = userRepository.findByUsername(username).orElseThrow(
 				() -> new ResourceNotFoundException(username)
@@ -63,23 +67,25 @@ public class JobService {
 		return jobMapper.jobToJobDto(job);
 	}
 	
-	public List<JobDto> getAllByFieldAndCity(String field, String city, Integer page) {
+	public AllJobsDto getAllByFieldAndCity(String field, String city, Integer page, String bearerToken) {
+		String token = bearerToken.substring(7);
+		String username = jwtService.extractUsername(token);
 		Page<Job> jobs;
 		if (!StringUtils.hasText(field) && !StringUtils.hasText(city)) {
-			jobs = jobRepository.findAllByDone(false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findAllByDoneAndOwnerUsernameNot(false, username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else if (!StringUtils.hasText(field) && StringUtils.hasText(city)) {
-			jobs = jobRepository.findByCityIsLikeIgnoreCaseAndDone("%"+city+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findByCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+city+"%", false, username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else if (StringUtils.hasText(field) && !StringUtils.hasText(city)) {
-			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndDone("%"+field+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+field+"%", false, username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else {
-			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDone("%"+field+"%", "%"+city+"%", false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+field+"%", "%"+city+"%", username, false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		}
-		List<JobDto> dtos = new ArrayList<>();
+		List<JobDto> dtos =new ArrayList<>();
 		jobs.stream()
 			.forEach(
 					(job) -> dtos.add(jobMapper.jobToJobDto(job))
 			);
-		return dtos;
+		return AllJobsDto.builder().jobs(dtos).numOfPages(jobs.getTotalPages()).build();
 	}
 	
 	public JobDto updateJob(JobUpdateDto job, Long id) {

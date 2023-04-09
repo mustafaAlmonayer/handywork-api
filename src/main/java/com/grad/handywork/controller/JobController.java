@@ -1,7 +1,5 @@
 package com.grad.handywork.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobUpdateDto;
 import com.grad.handywork.entity.Job;
@@ -29,25 +28,27 @@ public class JobController {
 	private JobService jobService;
 
 	@GetMapping("/job/all")
-	public ResponseEntity<List<JobDto>> getAllJobs(@RequestParam(required = false) String field, @RequestParam(required = false) String city, @RequestParam(required = true) Integer page) {
-		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, page), HttpStatus.OK);
+	public ResponseEntity<AllJobsDto> getAllJobs(@RequestParam(required = false) String field,
+			@RequestParam(required = false) String city, @RequestParam(required = true) Integer page,
+			@RequestHeader("Authorization") String bearerToken) {
+		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, page, bearerToken), HttpStatus.OK);
 	}
 
 	@GetMapping("/job/{id}")
 	public ResponseEntity<JobDto> getJobById(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.gtJobById(id), HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/user/{username}/job/save")
-	public ResponseEntity<JobDto> saveJob(@Validated @RequestBody Job job,
-			 @PathVariable String username, @RequestHeader("Authorization") String BearerToken) {
+	public ResponseEntity<JobDto> saveJob(@Validated @RequestBody Job job, @PathVariable String username,
+			@RequestHeader("Authorization") String BearerToken) {
 		return new ResponseEntity<>(jobService.saveJob(job, username), HttpStatus.OK);
 	}
 
 	@PatchMapping("/job/{id}/update")
 	public ResponseEntity<JobDto> updateJob(@Validated @RequestBody JobUpdateDto job,
 			@RequestHeader("Authorization") String BearerToken, @PathVariable Long id) {
-		return new ResponseEntity<>( jobService.updateJob(job, id), HttpStatus.OK );
+		return new ResponseEntity<>(jobService.updateJob(job, id), HttpStatus.OK);
 
 	}
 

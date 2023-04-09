@@ -65,8 +65,7 @@ public class UserService {
 			.forEach(
 					(job) -> dtos.add(jobMapper.jobToJobDto(job))
 			);
-		return dtos;
-				
+		return dtos;	
 	}
 
 	public void updateUsername(String username, UsernameDto usernameDto) {

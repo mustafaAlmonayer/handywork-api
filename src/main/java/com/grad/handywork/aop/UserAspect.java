@@ -84,7 +84,6 @@ public class UserAspect {
 	
 	@Before("updateAllPointCut()")
 	public void beforeUpdate(JoinPoint joinPoint) {
-		System.out.println("from point cut security");
 		security(joinPoint);
 	}
 	

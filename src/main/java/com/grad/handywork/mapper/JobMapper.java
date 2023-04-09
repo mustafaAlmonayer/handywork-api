@@ -13,5 +13,4 @@ public interface JobMapper {
 	@Mapping(source = "doneBy.username", target= "doneBy")
 	JobDto jobToJobDto(Job job);
 	
-
 }
