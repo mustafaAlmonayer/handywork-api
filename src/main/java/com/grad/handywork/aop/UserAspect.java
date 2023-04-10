@@ -46,9 +46,6 @@ public class UserAspect {
 		userDto.setPfpUrl(cloudinaryService.imageToUrl(userDto.getPfpFile()));
 	}
 	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateUsername(String, String, com.grad.handywork.dto.UsernameDto))")
-	public void updateUsernamePointCut() {}
-	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateEmail(String, String, com.grad.handywork.dto.EmailDto))")
 	public void updateEmailPointCut() {}
 	
@@ -67,9 +64,7 @@ public class UserAspect {
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePfpUrl(String, String, com.grad.handywork.dto.PfpFileDto))")
 	public void updatePfpUrlPointCut() {}
 	
-	@Pointcut("updateUsernamePointCut()"
-			+ "||"
-			+ " updateEmailPointCut()"
+	@Pointcut(" updateEmailPointCut()"
 			+ "||"
 			+ "updatePhoneNumberPointCut()"
 			+ "||"

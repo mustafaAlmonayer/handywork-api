@@ -17,7 +17,6 @@ import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.PhoneNumberDto;
 import com.grad.handywork.dto.UserDto;
-import com.grad.handywork.dto.UsernameDto;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
@@ -68,13 +67,6 @@ public class UserService {
 		return dtos;	
 	}
 
-	public void updateUsername(String username, UsernameDto usernameDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
-		user.setUsername(usernameDto.getUsername());
-		userRepository.save(user);
-	}
-	
 	public void updateEmail(String username, EmailDto emailDto) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));

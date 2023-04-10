@@ -24,7 +24,6 @@ import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.PhoneNumberDto;
 import com.grad.handywork.dto.UserDto;
-import com.grad.handywork.dto.UsernameDto;
 import com.grad.handywork.service.UserService;
 
 @RestController
@@ -48,13 +47,6 @@ public class UserController {
 	@GetMapping("/{username}/job/all")
 	public ResponseEntity<List<JobDto>> getAllJobsByUsername(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getAllJobsByUsername(username), HttpStatus.OK);
-	}
-
-	@PatchMapping("/{username}/update/username")
-	public ResponseEntity<Void> updateUsername(@PathVariable String username,
-			@RequestHeader("Authorization") String bearerToken, @Validated @RequestBody UsernameDto usernameDto) {
-		userService.updateUsername(username, usernameDto);
-		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@PatchMapping("/{username}/update/email")
