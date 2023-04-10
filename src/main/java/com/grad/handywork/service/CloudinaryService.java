@@ -11,7 +11,7 @@ import com.grad.handywork.util.CloudinaryUtil;
 public class CloudinaryService {
 	
 	@Autowired
-	CloudinaryUtil cloudinaryUtil;
+	private CloudinaryUtil cloudinaryUtil;
 	
 	public String imageToUrl(String base64Image) {
 		return cloudinaryUtil.imageUpload(base64Image);

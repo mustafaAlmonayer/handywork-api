@@ -17,7 +17,7 @@ import lombok.SneakyThrows;
 public class CloudinaryUtil {
 	
 	@Autowired
-	Cloudinary cloudinary;
+	private Cloudinary cloudinary;
 	
     @SneakyThrows
     public String imageUpload(String base64Image) {

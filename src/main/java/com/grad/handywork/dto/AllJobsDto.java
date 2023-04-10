@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class AllJobsDto {
 	
 	private List<JobDto> jobs;
+	
 	private Integer numOfPages;
 
 }

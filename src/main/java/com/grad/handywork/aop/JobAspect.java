@@ -12,19 +12,16 @@ import org.springframework.web.client.ResourceAccessException;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.repo.JobRepository;
-import com.grad.handywork.service.CloudinaryService;
 import com.grad.handywork.service.JwtService;
 
 @Aspect
 public class JobAspect {	
 	
 	@Autowired
-	JwtService jwtService;
-	
-	@Autowired CloudinaryService cloudinaryService;
+	private JwtService jwtService;
 	
 	@Autowired
-	JobRepository jobRepository;
+	private JobRepository jobRepository;
 	
 	@Pointcut("execution(* com.grad.handywork.controller.JobController.saveJob(com.grad.handywork.entity.Job, String, String))")
 	public void saveJobPointCut() {}

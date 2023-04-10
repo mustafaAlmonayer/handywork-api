@@ -30,19 +30,19 @@ public class JobService {
 	private String DEFAULT_JOB_URL;
 	
 	@Autowired
-	JobMapper jobMapper;
+	private JobMapper jobMapper;
 		
 	@Autowired
-	JobRepository jobRepository;
+	private JobRepository jobRepository;
 	
 	@Autowired
-	UserRepository userRepository;
+	private UserRepository userRepository;
 	
 	@Autowired
-	CloudinaryService cloudinaryService;
+	private CloudinaryService cloudinaryService;
 	
 	@Autowired
-	JwtService jwtService;
+	private JwtService jwtService;
 	
 	public JobDto saveJob(Job job, String username) {
 		User dbUser = userRepository.findByUsername(username).orElseThrow(
