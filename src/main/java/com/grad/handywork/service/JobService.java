@@ -83,7 +83,7 @@ public class JobService {
 		List<JobDto> dtos =new ArrayList<>();
 		jobs.stream()
 			.forEach(
-					(job) -> dtos.add(jobMapper.jobToJobDto(job))
+					(job) -> dtos.add(jobMapper.jobToJobDtoForBrowse(job))
 			);
 		return AllJobsDto.builder().jobs(dtos).numOfPages(jobs.getTotalPages()).build();
 	}

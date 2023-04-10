@@ -10,7 +10,12 @@ import com.grad.handywork.entity.Job;
 public interface JobMapper {
 	
 	@Mapping(source = "owner.username", target= "owner")
-	@Mapping(source = "doneBy.username", target= "doneBy")
+	@Mapping(source = "doneBy.username", target= "doneBy", defaultValue = "")
 	JobDto jobToJobDto(Job job);
+	
+	@Mapping(source = "owner.username", target= "owner")
+	@Mapping(target = "doneBy", ignore = true)
+	@Mapping(target = "done", ignore = true)
+	JobDto jobToJobDtoForBrowse(Job job);
 	
 }
