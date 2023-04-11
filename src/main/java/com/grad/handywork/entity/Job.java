@@ -75,7 +75,10 @@ public class Job {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobId")
     @Size(max = 2)
     private List<JobReview> jobReviews;
-   
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "job")
+    List<JobOffer> jobOffers;
+    
 	@Transient
     @Size(max = 5, message = "Cannot Have More than 5 images")
 	private List<String> imagesFiles;
@@ -97,6 +100,7 @@ public class Job {
 			String city,
 			boolean isDone,
 			List<JobReview> jobReview,
+			List<JobOffer> jobOffers,
 			List<String> imagesFiles
 			) {
 		super();
@@ -112,6 +116,7 @@ public class Job {
 		this.city = city;
 		this.done = isDone;
 		this.jobReviews = jobReview;
+		this.jobOffers = jobOffers;
 		this.imagesFiles = imagesFiles;
 	}
 
@@ -203,6 +208,14 @@ public class Job {
 	public void setJobReviews(List<JobReview> jobReviews) {
 		this.jobReviews = jobReviews;
 	}
+	
+	public List<JobOffer> getJobOffers() {
+		return jobOffers;
+	}
+
+	public void setJobOffers(List<JobOffer> jobOffers) {
+		this.jobOffers = jobOffers;
+	}
 
 	public boolean isDone() {
 		return done;
@@ -241,19 +254,27 @@ public class Job {
 	@Override
 	public String toString() {
 		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append("[");
+		StringBuffer jobReviewString = new StringBuffer();
+		jobReviewString.append("[");
 		jobReviews.forEach(jobReview -> {
-			buffer.append(jobReview.getId());
-			buffer.append(", ");
+			jobReviewString.append(jobReview.getId());
+			jobReviewString.append(", ");
 		});
-		buffer.append("]");
+		jobReviewString.append("]");
+		
+		StringBuffer jobOffterString = new StringBuffer();
+		jobOffterString.append("[");
+		jobOffers.forEach(jobOffter -> {
+			jobOffterString.append(jobOffter.getId());
+			jobOffterString.append(", ");
+		});
+		jobOffterString.append("]");
 		
 
 		return "Job [id=" + id + ", owner=" + owner.getId() + ", doneBy=" + doneBy.getId() + ", field=" + field + ", description="
 				+ description + " + , publishDate=" + publishDate + ", updateDate=" + updateDate
 				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + done + ", city=" + city
-				+ ", jobReviews=" + buffer + ", imagesFiles=" + imagesFiles + "]";
+				+ ", jobReviews=" + jobReviewString +  ", jobOffers=" + jobOffterString + ", imagesFiles=" + imagesFiles + "]";
 	}
 	
 }

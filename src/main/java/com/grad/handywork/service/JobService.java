@@ -15,11 +15,15 @@ import org.springframework.util.StringUtils;
 
 import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
+import com.grad.handywork.dto.JobOfferDto;
 import com.grad.handywork.dto.JobUpdateDto;
 import com.grad.handywork.entity.Job;
+import com.grad.handywork.entity.JobOffer;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.mapper.JobMapper;
+import com.grad.handywork.mapper.JobOfferMapper;
+import com.grad.handywork.repo.JobOfferRepository;
 import com.grad.handywork.repo.JobRepository;
 import com.grad.handywork.repo.UserRepository;
 
@@ -31,12 +35,18 @@ public class JobService {
 	
 	@Autowired
 	private JobMapper jobMapper;
+	
+	@Autowired
+	private JobOfferMapper jobOfferMapper;
 		
 	@Autowired
 	private JobRepository jobRepository;
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private JobOfferRepository jobOfferRepository;
 	
 	@Autowired
 	private CloudinaryService cloudinaryService;
@@ -90,14 +100,28 @@ public class JobService {
 	
 	public JobDto updateJob(JobUpdateDto job, Long id) {
 		Job dbJob = jobRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Job With ID: " + id + " NotFond")
-		);
+				() -> new ResourceNotFoundException("Job With ID: " + id + " NotFond"));
 		dbJob.setJobName(job.getJobName());
 		dbJob.setDescription(job.getDescription());
 		dbJob.setCity(job.getCity());
 		dbJob.setField(job.getField());
 		dbJob.setUpdateDate(LocalDateTime.now());
 		return jobMapper.jobToJobDto(jobRepository.save(dbJob));
+	}
+	
+	public void makeOffer(JobOfferDto jobOfferDto, String bearerToken, Long id) {
+		String token = bearerToken.substring(7);
+		String username = jwtService.extractUsername(token);
+		Job job = jobRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Job With ID: " + id + " NotFond"));
+		User user = userRepository.findByUsername(username).orElseThrow(
+				() -> new ResourceNotFoundException("User With Username: " + username + " NotFond"));
+		JobOffer jobOffer = jobOfferMapper.jobOfferDtoToJobOffer(jobOfferDto);
+		jobOffer.setJob(job);
+		jobOffer.setUser(user);
+		jobOffer.setAccepted(false);
+		jobOffer.setRejected(false);
+		jobOfferRepository.save(jobOffer);
 	}
 
 }

@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -77,17 +78,22 @@ public class UserAspect {
 			+ "updatePfpUrlPointCut()")
 	public void updateAllPointCut() {}
 	
-	@Before("updateAllPointCut()")
+	@Order(value = 0)
+	@Before("updateAllPointCut()") 
 	public void beforeUpdate(JoinPoint joinPoint) {
+		System.out.println("from security");
 		security(joinPoint);
 	}
 	
+	@Order(value = 1)
 	@Before("updatePasswordPointCut()")
 	public void beforeUpdatePassword(JoinPoint joinPoint) {
+		System.out.println("from update password");
 		PasswordDto passwordDto = (PasswordDto) joinPoint.getArgs()[2];
 		passwordDto.setEncodedPassword(passwordEncoder.encode(passwordDto.getPassword()));
 	}
 	
+	@Order(value = 1)
 	@Before("updatePfpUrlPointCut()")
 	public void beforeUpdatePfpUrl(JoinPoint joinPoint) {
 		PfpFileDto pfpFileDto = (PfpFileDto) joinPoint.getArgs()[2];

@@ -55,4 +55,21 @@ public class JobAspect {
 			throw new ResourceAccessException(dbJob.getOwner().getUsername() + ": Is Not The Resource Owner");
 	}
 	
+	@Pointcut("execution(* com.grad.handywork.controller.JobController.makeOffer(com.grad.handywork.dto.JobOfferDto, String, Long))")
+	public void makeOfferPointCut() {}
+	
+	@Before("makeOfferPointCut()")
+	public void beforeMakeOffer(JoinPoint joinPoint) {
+		String bearerToken = (String) joinPoint.getArgs()[1];
+		String username = jwtService.extractUsername(bearerToken.substring(7));
+		Long id = (Long) joinPoint.getArgs()[2];
+		Job job = jobRepository.findById(id).orElseThrow(
+				() -> new ResourceNotFoundException("Job Not Found"));
+		if (job.isDone()) {
+			throw new ResourceAccessException("this job is fenished");
+		}
+		if (job.getOwner().getUsername().equals(username)) {
+			throw new ResourceAccessException("You Cannot Make An Offer On your On Job");
+		}
+	}
 }

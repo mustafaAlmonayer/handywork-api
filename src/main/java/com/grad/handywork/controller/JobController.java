@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
+import com.grad.handywork.dto.JobOfferDto;
 import com.grad.handywork.dto.JobUpdateDto;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.service.JobService;
@@ -50,6 +51,13 @@ public class JobController {
 			@RequestHeader("Authorization") String BearerToken, @PathVariable Long id) {
 		return new ResponseEntity<>(jobService.updateJob(job, id), HttpStatus.OK);
 
+	}
+	
+	@PostMapping("/job/{id}/makeOffer")
+	public ResponseEntity<Void> makeOffer(@Validated @RequestBody JobOfferDto jobOfferDto,
+			@RequestHeader("Authorization") String bearerToken, @PathVariable Long id) {
+		jobService.makeOffer(jobOfferDto, bearerToken, id);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 }
