@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -29,10 +28,7 @@ import com.grad.handywork.repo.UserRepository;
 
 @Service
 public class JobService {
-	
-	@Value("${DEFAULT_JOB_URL}")
-	private String DEFAULT_JOB_URL;
-	
+		
 	@Autowired
 	private JobMapper jobMapper;
 	
@@ -47,28 +43,9 @@ public class JobService {
 	
 	@Autowired
 	private JobOfferRepository jobOfferRepository;
-	
-	@Autowired
-	private CloudinaryService cloudinaryService;
-	
+		
 	@Autowired
 	private JwtService jwtService;
-	
-	public JobDto saveJob(Job job, String username) {
-		User dbUser = userRepository.findByUsername(username).orElseThrow(
-				() -> new ResourceNotFoundException(username)
-		);
-		job.setOwner(dbUser);
-		if(job.getImagesFiles() == null || job.getImagesFiles().get(0) == "") {
-			List<String> imageUrls = new ArrayList<>();
-			imageUrls.add(DEFAULT_JOB_URL);
-			job.setImagesUrls(imageUrls);
-		} else {
-			job.setImagesUrls(cloudinaryService.imageToUrl(job.getImagesFiles()));
-		}
-		Job dbJob =jobRepository.save(job);
-		return jobMapper.jobToJobDto(dbJob);
-	}
 	
 	public JobDto gtJobById(Long id) {
 		Job job = jobRepository.findById(id).orElseThrow(
@@ -98,15 +75,15 @@ public class JobService {
 		return AllJobsDto.builder().jobs(dtos).numOfPages(jobs.getTotalPages()).build();
 	}
 	
-	public JobDto updateJob(JobUpdateDto job, Long id) {
-		Job dbJob = jobRepository.findById(id).orElseThrow(
+	public JobDto updateJob(Long id, JobUpdateDto jobUpdateDto) {
+		Job job = jobRepository.findById(id).orElseThrow(
 				() -> new ResourceNotFoundException("Job With ID: " + id + " NotFond"));
-		dbJob.setJobName(job.getJobName());
-		dbJob.setDescription(job.getDescription());
-		dbJob.setCity(job.getCity());
-		dbJob.setField(job.getField());
-		dbJob.setUpdateDate(LocalDateTime.now());
-		return jobMapper.jobToJobDto(jobRepository.save(dbJob));
+		job.setJobName(jobUpdateDto.getJobName());
+		job.setDescription(jobUpdateDto.getDescription());
+		job.setCity(jobUpdateDto.getCity());
+		job.setField(jobUpdateDto.getField());
+		job.setUpdateDate(LocalDateTime.now());
+		return jobMapper.jobToJobDto(jobRepository.save(job));
 	}
 	
 	public void makeOffer(JobOfferDto jobOfferDto, String bearerToken, Long id) {

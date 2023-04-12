@@ -41,4 +41,7 @@ public class JobDto {
 	
     private String city;
     
+	private List<String> imagesFiles;
+
+    
 }

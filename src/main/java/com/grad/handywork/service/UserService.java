@@ -28,26 +28,36 @@ import com.grad.handywork.repo.UserRepository;
 
 @Service
 public class UserService {
-
-	@Autowired
-	private UserRepository userRepository;
 	
 	@Autowired
 	private UserMapper userMapper;
-
+	
 	@Autowired
-	private JwtService jwtService;
+	private JobMapper jobMapper;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Autowired
 	private JobRepository jobRepository;
 	
 	@Autowired
-	private JobMapper jobMapper;
+	private JwtService jwtService;
 
 	public AuthDto saveUser(UserDto user) {
 		User savedUser = userRepository.save(userMapper.userDtoToUserForSave(user));
 		String jwtToken = jwtService.generateToken(savedUser);
 		return AuthDto.builder().token(jwtToken).build();
+	}
+	
+	public JobDto saveJob(JobDto jobDto, String username) {
+		Job job = jobMapper.JobDtoToJobForSave(jobDto);
+		User dbUser = userRepository.findByUsername(username).orElseThrow(
+				() -> new ResourceNotFoundException(username)
+		);
+		job.setOwner(dbUser);
+		Job dbJob =jobRepository.save(job);
+		return jobMapper.jobToJobDto(dbJob);
 	}
 
 	public UserDto getUser(String username) {

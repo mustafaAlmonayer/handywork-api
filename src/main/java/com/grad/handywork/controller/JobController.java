@@ -40,15 +40,15 @@ public class JobController {
 	}
 
 	@PatchMapping("/{id}/update")
-	public ResponseEntity<JobDto> updateJob(@Validated @RequestBody JobUpdateDto job,
-			@RequestHeader("Authorization") String BearerToken, @PathVariable Long id) {
-		return new ResponseEntity<>(jobService.updateJob(job, id), HttpStatus.OK);
+	public ResponseEntity<JobDto> updateJob(@RequestHeader("Authorization") String BearerToken, @PathVariable Long id,
+			@Validated @RequestBody JobUpdateDto jobUpdateDto) {
+		return new ResponseEntity<>(jobService.updateJob(id, jobUpdateDto), HttpStatus.OK);
 
 	}
 	
 	@PostMapping("/{id}/makeOffer")
-	public ResponseEntity<Void> makeOffer(@Validated @RequestBody JobOfferDto jobOfferDto,
-			@RequestHeader("Authorization") String bearerToken, @PathVariable Long id) {
+	public ResponseEntity<Void> makeOffer(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,
+			@Validated @RequestBody JobOfferDto jobOfferDto) {
 		jobService.makeOffer(jobOfferDto, bearerToken, id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
