@@ -11,11 +11,13 @@ public interface UserMapper {
 	
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "password", ignore = true)
-	UserDto userToUserDtoWithoutIdandPassword(User user);
-		
+	UserDto userToUserDtoForGet(User user);
+	
 	@Mapping(target = "id", ignore = true)
-	@Mapping(target= "jobs", ignore = true)
 	@Mapping(target= "authorities", ignore = true)
-	User userDtoToUserWithoutId(UserDto userDto);
+	@Mapping(target= "jobs", ignore = true)
+	@Mapping(target="jobOffers", ignore = true)
+	@Mapping(target="jobReviews", ignore = true)
+	User userDtoToUserForSave(UserDto userDto);
 	
 }

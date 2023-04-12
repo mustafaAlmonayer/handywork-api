@@ -42,6 +42,15 @@ CREATE TABLE job (
 ALTER TABLE job
   ADD CONSTRAINT USER_DONE_BY_FOREIGN_KEY FOREIGN KEY (done_by_id) REFERENCES user (id),
   ADD CONSTRAINT USER_OWNER_FOREIGN_KEY FOREIGN KEY (owner_id) REFERENCES user (id);
+  
+CREATE INDEX field_index
+ON job (field);
+
+CREATE INDEX city_index
+ON job (city);
+
+CREATE INDEX is_done_index
+ON job (is_done);
 
 CREATE TABLE image_url (
     job_id BIGINT NOT NULL,
@@ -50,12 +59,6 @@ CREATE TABLE image_url (
 
 ALTER TABLE image_url
   ADD CONSTRAINT JOB_FOREIGN_KEY FOREIGN KEY (job_id) REFERENCES job (id);
-  
-CREATE INDEX field_index
-ON job (field);
-
-CREATE INDEX city_index
-ON job (city);
 
 CREATE TABLE job_review (
     id BIGINT NOT NULL AUTO_INCREMENT,

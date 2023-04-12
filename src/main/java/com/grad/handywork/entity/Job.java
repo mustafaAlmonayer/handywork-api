@@ -1,8 +1,10 @@
 package com.grad.handywork.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
@@ -72,12 +74,12 @@ public class Job {
     @Column(name="city")
     private String city;
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "job")
     @Size(max = 2)
-    private List<JobReview> jobReviews;
+    private List<JobReview> jobReviews = new ArrayList<>();
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "job")
-    List<JobOffer> jobOffers;
+    private List<JobOffer> jobOffers = new ArrayList<>();
     
 	@Transient
     @Size(max = 5, message = "Cannot Have More than 5 images")
@@ -87,22 +89,9 @@ public class Job {
 		super();
 	}
 
-	public Job(
-			Long id,
-			User owner,
-			User doneBy,
-			String field,
-			String description,
-			LocalDateTime publishDate,
-			LocalDateTime updateDate,
-			String jobName,
-			List<String> imagesUrls,
-			String city,
-			boolean isDone,
-			List<JobReview> jobReview,
-			List<JobOffer> jobOffers,
-			List<String> imagesFiles
-			) {
+	public Job(Long id, User owner, User doneBy, String field, String description, LocalDateTime publishDate,
+			LocalDateTime updateDate, String jobName, List<String> imagesUrls, String city, boolean isDone,
+			List<JobReview> jobReview, List<JobOffer> jobOffers, List<String> imagesFiles) {
 		super();
 		this.id = id;
 		this.owner = owner;
@@ -134,7 +123,8 @@ public class Job {
 
 	public void setOwner(User owner) {
 		this.owner = owner;
-		owner.addJob(this);
+		if (owner != null)
+			owner.addJob(this);
 	}
 
 	public User getDoneBy() {
@@ -143,6 +133,8 @@ public class Job {
 
 	public void setDoneBy(User doneBy) {
 		this.doneBy = doneBy;
+		if (doneBy != null)
+			doneBy.addJob(this);
 	}
 
 	public String getField() {
@@ -235,7 +227,7 @@ public class Job {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(doneBy.getId(), id, owner.getId());
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -247,34 +239,27 @@ public class Job {
 		if (getClass() != obj.getClass())
 			return false;
 		Job other = (Job) obj;
-		return Objects.equals(doneBy.getId(), other.doneBy.getId()) && Objects.equals(id, other.id)
-				&& Objects.equals(owner.getId(), other.owner.getId());
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		
-		StringBuffer jobReviewString = new StringBuffer();
-		jobReviewString.append("[");
-		jobReviews.forEach(jobReview -> {
-			jobReviewString.append(jobReview.getId());
-			jobReviewString.append(", ");
-		});
-		jobReviewString.append("]");
-		
-		StringBuffer jobOffterString = new StringBuffer();
-		jobOffterString.append("[");
-		jobOffers.forEach(jobOffter -> {
-			jobOffterString.append(jobOffter.getId());
-			jobOffterString.append(", ");
-		});
-		jobOffterString.append("]");
-		
-
-		return "Job [id=" + id + ", owner=" + owner.getId() + ", doneBy=" + doneBy.getId() + ", field=" + field + ", description="
-				+ description + " + , publishDate=" + publishDate + ", updateDate=" + updateDate
-				+ ", jobName=" + jobName + ", imagesUrls=" + imagesUrls + ", isDone=" + done + ", city=" + city
-				+ ", jobReviews=" + jobReviewString +  ", jobOffers=" + jobOffterString + ", imagesFiles=" + imagesFiles + "]";
+		return "Job ["
+				+ "id=" + id 
+				+ ", owner=" + owner.getId() 
+				+ ", doneBy=" + doneBy.getId() 
+				+ ", field=" + field 
+				+ ", description=" + description 
+				+ ", publishDate=" + publishDate 
+				+ ", updateDate=" + updateDate 
+				+ ", jobName=" + jobName
+				+ ", imagesUrls=" + imagesUrls 
+				+ ", done=" + done 
+				+ ", city=" + city 
+				+ ", jobReviews=" + jobReviews.stream().map(jobReview -> jobReview.getId() + ", ").collect(Collectors.toList())
+				+ ", jobOffers=" + jobOffers.stream().map(jobOffer -> jobOffer.getId() + ", ").collect(Collectors.toList()) 
+				+ ", imagesFiles=" + imagesFiles 
+				+ "]";
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
@@ -76,12 +77,21 @@ public class User implements UserDetails {
 	private String pfpUrl;
 
 	@NotNull(message = "City Field Cannot be empty")
-	@Size(min =3, message = "City Field Cannot Be Less than 3")
+	@Size(min = 3, message = "City Field Cannot Be Less than 3")
 	@Column(name = "city")
 	private String city;
 
-	@OneToMany(mappedBy = "owner", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "owner", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+			CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	private List<Job> jobs = new ArrayList<>();
+
+	@OneToMany(mappedBy = "user", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+			CascadeType.REMOVE }, fetch = FetchType.LAZY)
+	private List<JobOffer> jobOffers = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "user", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+			CascadeType.REMOVE }, fetch = FetchType.LAZY)
+	private List<JobReview> jobReviews = new ArrayList<>();
 
 	@Transient
 	private String pfpFile;
@@ -91,7 +101,8 @@ public class User implements UserDetails {
 	}
 
 	public User(Long id, String username, String password, String firstName, String lastName, String email,
-			String phoneNumber, String pfpUrl, String city, List<Job> jobs, String pfpFile) {
+			String phoneNumber, String pfpUrl, String city, List<Job> jobs, List<JobOffer> jobOffers,
+			List<JobReview> jobReviews, String pfpFile) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -103,6 +114,8 @@ public class User implements UserDetails {
 		this.city = city;
 		this.pfpUrl = pfpUrl;
 		this.jobs = jobs;
+		this.jobOffers = jobOffers;
+		this.jobReviews = jobReviews;
 		this.pfpFile = pfpFile;
 	}
 
@@ -183,17 +196,33 @@ public class User implements UserDetails {
 	public List<Job> getJobs() {
 		return jobs;
 	}
-	
+
 	public void addJob(Job job) {
 		this.jobs.add(job);
 	}
-	
+
 	public void removeJob(Job job) {
 		this.jobs.remove(job);
 	}
 
 	public void setJobs(List<Job> jobs) {
 		this.jobs = jobs;
+	}
+
+	public List<JobOffer> getJobOffers() {
+		return jobOffers;
+	}
+
+	public void setJobOffers(List<JobOffer> jobOffers) {
+		this.jobOffers = jobOffers;
+	}
+
+	public List<JobReview> getJobReviews() {
+		return jobReviews;
+	}
+
+	public void setJobReviews(List<JobReview> jobReviews) {
+		this.jobReviews = jobReviews;
 	}
 
 	public String getPfpFile() {
@@ -206,7 +235,7 @@ public class User implements UserDetails {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(email, id, phoneNumber, username);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -218,15 +247,26 @@ public class User implements UserDetails {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(email, other.email) && Objects.equals(id, other.id)
-				&& Objects.equals(phoneNumber, other.phoneNumber) && Objects.equals(username, other.username);
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", city=" + city
-				+ ", pfpUrl=" + pfpUrl + ", pfpFile=" + pfpFile + "]";
+		return "User ["
+				+ "id=" + id 
+				+ ", username=" + username 
+				+ ", password=" + password 
+				+ ", firstName=" + firstName
+				+ ", lastName=" + lastName 
+				+ ", email=" + email 
+				+ ", phoneNumber=" + phoneNumber 
+				+ ", pfpUrl=" + pfpUrl
+				+ ", city=" + city 
+				+ ", jobs=" + jobs.stream().map(job -> job.getId() + ", ").collect(Collectors.toList())
+				+ ", jobOffers=" + jobOffers.stream().map(jobOffer -> jobOffer.getId() + ", ").collect(Collectors.toList())
+				+ ", jobReviews=" + jobReviews.stream().map(jobReview -> jobReview.getId() + ", ").collect(Collectors.toList())
+				+ ", pfpFile=" + pfpFile 
+				+ "]";
 	}
 
 	@Override

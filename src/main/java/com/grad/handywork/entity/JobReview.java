@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.grad.handywork.enumtypes.JobReviewType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,6 +13,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Past;
 
@@ -23,11 +26,13 @@ public class JobReview {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "job_id")
-	private Long jobId;
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "job_id")
+	private Job job;
 	
-	@Column(name = "user_id")
-	private Long userId;
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "user_id")
+	private User user;
 	
 	@Column(name = "type", columnDefinition = "ENUM('JOB_REVIEW', 'USER_REVIEW')")
 	@Enumerated(EnumType.STRING)
@@ -51,20 +56,12 @@ public class JobReview {
 		super();
 	}
 
-	public JobReview(
-			Long id,
-			Long jobId,
-			Long userId,
-			JobReviewType type,
-			byte rating,
-			LocalDateTime publishDate,
-			LocalDateTime updateDate,
-			String reviewText
-			) {
+	public JobReview(Long id, Job job, User user, JobReviewType type, byte rating, LocalDateTime publishDate,
+			LocalDateTime updateDate, String reviewText) {
 		super();
 		this.id = id;
-		this.jobId = jobId;
-		this.userId = userId;
+		this.job = job;
+		this.user = user;
 		this.type = type;
 		this.rating = rating;
 		this.publishDate = publishDate;
@@ -80,20 +77,24 @@ public class JobReview {
 		this.id = id;
 	}
 
-	public Long getJobId() {
-		return jobId;
+	public Job getJob() {
+		return job;
 	}
 
-	public void setJobId(Long jobId) {
-		this.jobId = jobId;
+	public void setJob(Job job) {
+		this.job = job;
+		if (job != null)
+			job.getJobReviews().add(this);
 	}
 
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
+		if (user != null)
+			user.getJobReviews().add(this);
 	}
 
 	public JobReviewType getType() {
@@ -107,7 +108,7 @@ public class JobReview {
 	public byte getRating() {
 		return rating;
 	}
-
+	
 	public void setRating(byte rating) {
 		this.rating = rating;
 	}
@@ -138,7 +139,7 @@ public class JobReview {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, jobId, type, userId);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -150,14 +151,20 @@ public class JobReview {
 		if (getClass() != obj.getClass())
 			return false;
 		JobReview other = (JobReview) obj;
-		return Objects.equals(id, other.id) && Objects.equals(jobId, other.jobId) && type == other.type
-				&& Objects.equals(userId, other.userId);
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "JobReview [id=" + id + ", jobId=" + jobId + ", userId=" + userId + ", type=" + type + ", rating="
-				+ rating + ", publishDate=" + publishDate + ", updateDate=" + updateDate + ", reviewText=" + reviewText
+		return "JobReview ["
+				+ "id=" + id 
+				+ ", job=" + job.getId() 
+				+ ", user=" + user.getId() 
+				+ ", type=" + type 
+				+ ", rating=" + rating
+				+ ", publishDate=" + publishDate 
+				+ ", updateDate=" + updateDate 
+				+ ", reviewText=" + reviewText 
 				+ "]";
 	}
 	

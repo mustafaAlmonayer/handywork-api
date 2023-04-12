@@ -34,9 +34,11 @@ public class UserDto {
 	@Size(min = 8, message = "Password Field Must Be 8 Or More")
 	private String password;
 	
+	@JsonInclude(value = Include.ALWAYS)
 	@Size(min = 3, max = 36, message = "First Name Field Must be between 3 and 36")
 	private String firstName;
 	
+	@JsonInclude(value = Include.ALWAYS)
 	@Size(min = 3, max = 36, message = "Last Name Field Must be between 3 and 36")
 	private String lastName;
 

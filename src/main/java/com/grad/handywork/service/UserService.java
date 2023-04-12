@@ -1,6 +1,7 @@
 package com.grad.handywork.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class UserService {
 	private JobMapper jobMapper;
 
 	public AuthDto saveUser(UserDto user) {
-		User savedUser = userRepository.save(userMapper.userDtoToUserWithoutId(user));
+		User savedUser = userRepository.save(userMapper.userDtoToUserForSave(user));
 		String jwtToken = jwtService.generateToken(savedUser);
 		return AuthDto.builder().token(jwtToken).build();
 	}
@@ -52,7 +53,7 @@ public class UserService {
 	public UserDto getUser(String username) {
 		User user = userRepository.findByUsername(username)
 				.orElseThrow(() -> new ResourceNotFoundException(username));
-		return userMapper.userToUserDtoWithoutIdandPassword(user);
+		return userMapper.userToUserDtoForGet(user);
 	}
 	
 	public List<JobDto> getAllJobsByUsername(String username) {
@@ -64,6 +65,7 @@ public class UserService {
 			.forEach(
 					(job) -> dtos.add(jobMapper.jobToJobDto(job))
 			);
+		dtos.sort(Comparator.comparing(JobDto::getPublishDate).reversed());
 		return dtos;	
 	}
 

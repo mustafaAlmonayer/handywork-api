@@ -67,7 +67,8 @@ public class JobOffer {
 
 	public void setJob(Job job) {
 		this.job = job;
-		job.jobOffers.add(this);
+		if (job != null)
+			job.getJobOffers().add(this);
 	}
 	
 	public User getUser() {
@@ -76,6 +77,8 @@ public class JobOffer {
 
 	public void setUser(User user) {
 		this.user = user;
+		if (user != null)
+			user.getJobOffers().add(this);
 	}
 
 	public Integer getSuggestedAmount() {
@@ -104,7 +107,7 @@ public class JobOffer {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, job, user);
+		return Objects.hash(id);
 	}
 
 	@Override
@@ -116,15 +119,19 @@ public class JobOffer {
 		if (getClass() != obj.getClass())
 			return false;
 		JobOffer other = (JobOffer) obj;
-		return Objects.equals(id, other.id) && Objects.equals(job.getId(), other.job.getId()) && Objects.equals(user.getId(), other.user.getId());
+		return Objects.equals(id, other.id);
 	}
 
 	@Override
 	public String toString() {
-		return "JobOffer [id=" + id + ", job=" + job.getId() + ", user=" + user.getId() + ", suggestedAmount=" + suggestedAmount
-				+ ", accepted=" + accepted + ", rejected=" + rejected + "]";
+		return "JobOffer ["
+				+ "id=" + id 
+				+ ", job=" + job.getId() 
+				+ ", user=" + user.getId() 
+				+ ", suggestedAmount=" + suggestedAmount
+				+ ", accepted=" + accepted 
+				+ ", rejected=" + rejected 
+				+ "]";
 	}
 
-	
-	
 }

@@ -1,7 +1,5 @@
 package com.grad.handywork.aop;
 
-import java.time.LocalDateTime;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -22,23 +20,6 @@ public class JobAspect {
 	
 	@Autowired
 	private JobRepository jobRepository;
-	
-	@Pointcut("execution(* com.grad.handywork.controller.JobController.saveJob(com.grad.handywork.entity.Job, String, String))")
-	public void saveJobPointCut() {}
-	
-	@Before("saveJobPointCut()")
-	public void beforeSaveJob(JoinPoint joinPoint) {
-		String username = (String) joinPoint.getArgs()[1];
-		String token = (String) joinPoint.getArgs()[2];
-		String bearerToken = token.substring(7);
-		if(!jwtService.extractUsername(bearerToken).equals(username)) 
-			throw new ResourceAccessException(username + ": Is Not The Resource Owner");
-		Job job = (Job) joinPoint.getArgs()[0];
-		job.setId(null);
-		job.setDone(false);
-		job.setDoneBy(null);
-		job.setPublishDate(LocalDateTime.now());
-	}
 	
 	@Pointcut("execution(* com.grad.handywork.controller.JobController.updateJob(com.grad.handywork.dto.JobUpdateDto, String, Long))")
 	public void updateJobPointCut() {}

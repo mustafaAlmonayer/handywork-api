@@ -6,7 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import com.grad.handywork.aop.JobAspect;
-import com.grad.handywork.aop.UserAspect;
+import com.grad.handywork.aop.UserSecurityAspect;
+import com.grad.handywork.aop.UserPreprocessAspect;
 
 @Configuration
 @EnableAspectJAutoProxy
@@ -16,8 +17,13 @@ public class AspectConfig {
 	private String DEFAULT_PFP_URL;
 	
 	@Bean
-	public UserAspect userAspect() {
-		return new UserAspect(DEFAULT_PFP_URL);
+	public UserSecurityAspect userAspect() {
+		return new UserSecurityAspect();
+	}
+	
+	@Bean
+	public UserPreprocessAspect UserPreprocessAspect() {
+		return new UserPreprocessAspect(DEFAULT_PFP_URL);
 	}
 	
 	@Bean
