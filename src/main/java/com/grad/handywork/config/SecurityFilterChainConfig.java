@@ -40,7 +40,6 @@ public class SecurityFilterChainConfig {
 			.and()
 			.authenticationProvider(authenticationProvider)
 			.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-		
 		return httpSecurity.build();
 	}
 

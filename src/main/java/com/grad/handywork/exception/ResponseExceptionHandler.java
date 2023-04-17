@@ -28,26 +28,29 @@ public class ResponseExceptionHandler extends ResponseEntityExceptionHandler {
 				request.getDescription(false));
 		return new ResponseEntity<>(errorDetailsDto, HttpStatus.NOT_FOUND);
 	}
-	
+
 	@ExceptionHandler(ResourceAccessException.class)
-	public final ResponseEntity<ErrorDetailsDto> handleResourceAccessException(Exception ex, WebRequest request) throws Exception {
-		ErrorDetailsDto errorDetails = new ErrorDetailsDto(LocalDateTime.now(), ex.getMessage(), request.getDescription(false));
+	public final ResponseEntity<ErrorDetailsDto> handleResourceAccessException(Exception ex, WebRequest request)
+			throws Exception {
+		ErrorDetailsDto errorDetails = new ErrorDetailsDto(LocalDateTime.now(), ex.getMessage(),
+				request.getDescription(false));
 		return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
 	}
-	
+
+	@ExceptionHandler(BadUpdateDateException.class)
+	public final ResponseEntity<ErrorDetailsForValidationtDto> handleBadUpdateDate(BadUpdateDateException ex, WebRequest request) {
+		return new ResponseEntity<>(ex.getErrorDetailsForValidationtDto(), HttpStatus.BAD_REQUEST);
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 		Map<String, String> errorFieldAndDetails = new HashMap<>();
-		ex.getFieldErrors().stream().forEach(
-				error -> errorFieldAndDetails.put(error.getField(), error.getDefaultMessage())
-		);
-		ErrorDetailsForValidationtDto errorDetailsForValidationtDto = 
-				ErrorDetailsForValidationtDto
-					.builder()
-					.message(errorFieldAndDetails)
-					.build();
+		ex.getFieldErrors().stream()
+				.forEach(error -> errorFieldAndDetails.put(error.getField(), error.getDefaultMessage()));
+		ErrorDetailsForValidationtDto errorDetailsForValidationtDto = ErrorDetailsForValidationtDto.builder()
+				.message(errorFieldAndDetails).build();
 		return new ResponseEntity<>(errorDetailsForValidationtDto, HttpStatus.BAD_REQUEST);
 	}
-	
+
 }

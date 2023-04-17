@@ -10,14 +10,11 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.AuthDto;
-import com.grad.handywork.dto.CityDto;
-import com.grad.handywork.dto.EmailDto;
-import com.grad.handywork.dto.FirstAndLastNameDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
-import com.grad.handywork.dto.PhoneNumberDto;
 import com.grad.handywork.dto.UserDto;
+import com.grad.handywork.dto.UserUpdateMainDto;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
@@ -28,98 +25,76 @@ import com.grad.handywork.repo.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	@Autowired
 	private UserMapper userMapper;
-	
+
 	@Autowired
 	private JobMapper jobMapper;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private JobRepository jobRepository;
-	
+
 	@Autowired
 	private JwtService jwtService;
 
 	public AuthDto saveUser(UserDto user) {
+		System.out.println("from service");
+		System.out.println(user);
 		User savedUser = userRepository.save(userMapper.userDtoToUserForSave(user));
 		String jwtToken = jwtService.generateToken(savedUser);
 		return AuthDto.builder().token(jwtToken).build();
 	}
-	
-	public JobDto saveJob(JobDto jobDto, String username) {
+
+	public void saveJob(JobDto jobDto, String username) {
 		Job job = jobMapper.JobDtoToJobForSave(jobDto);
-		User dbUser = userRepository.findByUsername(username).orElseThrow(
-				() -> new ResourceNotFoundException(username)
-		);
-		job.setOwner(dbUser);
-		Job dbJob =jobRepository.save(job);
-		return jobMapper.jobToJobDto(dbJob);
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
+		if (job.getCity() == null) {
+			job.setCity(user.getCity());
+		}
+		job.setOwner(user);
+		jobRepository.save(job);
 	}
 
 	public UserDto getUser(String username) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
 		return userMapper.userToUserDtoForGet(user);
 	}
-	
+
 	public List<JobDto> getAllJobsByUsername(String username) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
 		List<Job> jobs = jobRepository.findAllByOwnerId(user.getId(), Sort.by(Direction.DESC, "publishDate"));
 		List<JobDto> dtos = new ArrayList<>();
-		jobs.stream()
-			.forEach(
-					(job) -> dtos.add(jobMapper.jobToJobDto(job))
-			);
+		jobs.stream().forEach((job) -> dtos.add(jobMapper.jobToJobDto(job)));
 		dtos.sort(Comparator.comparing(JobDto::getPublishDate).reversed());
-		return dtos;	
+		return dtos;
 	}
 
-	public void updateEmail(String username, EmailDto emailDto) {
+	public void updateMain(String username, UserUpdateMainDto userUpdateMainDto) {
 		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
-		user.setEmail(emailDto.getEmail());
+				.orElseThrow(() -> new ResourceNotFoundException("User With Username: " + username + " NotFound"));
+		user.setFirstName(userUpdateMainDto.getFirstName());
+		user.setLastName(userUpdateMainDto.getLastName());
+		user.setEmail(userUpdateMainDto.getEmail());
+		user.setPhoneNumber(userUpdateMainDto.getPhoneNumber());
+		user.setCity(userUpdateMainDto.getCity());
 		userRepository.save(user);
 	}
-	
-	public void updatePhoneNumber(String username, PhoneNumberDto phoneNumberDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
-		user.setPhoneNumber(phoneNumberDto.getPhoneNumber());
-		userRepository.save(user);
-	}
-	
+
 	public void updatePassword(String username, PasswordDto passwordDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
 		user.setPassword(passwordDto.getEncodedPassword());
 		userRepository.save(user);
 	}
-	
-	public void updateCity(String username, CityDto cityDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
-		user.setCity(cityDto.getCity());
-		userRepository.save(user);
-	}
-	
-	public void updateFirstAndLastName(String username, FirstAndLastNameDto firstAndLastNameDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
-		user.setFirstName(firstAndLastNameDto.getFirstName());
-		user.setLastName(firstAndLastNameDto.getLastName());
-		userRepository.save(user);
-	}
-	
-	public void updatePfpUrl(String username, PfpFileDto pfpFileDto) {
-		User user = userRepository.findByUsername(username)
-				.orElseThrow(() -> new ResourceNotFoundException(username));
+
+	public String updatePfpUrl(String username, PfpFileDto pfpFileDto) {
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
 		user.setPfpUrl(pfpFileDto.getPfpUrl());
 		userRepository.save(user);
+		return user.getPfpUrl();
 	}
 
 }

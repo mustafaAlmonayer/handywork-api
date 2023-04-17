@@ -54,10 +54,12 @@ public class User implements UserDetails {
 	private String password;
 
 	@Column(name = "first_name")
+	@NotNull(message = "First Name Field Cannot Be Empty")
 	@Size(min = 3, max = 36, message = "First Name Field Must be between 3 and 36")
 	private String firstName;
 
 	@Column(name = "last_name")
+	@NotNull(message = "Last Name Field Cannot Be Empty")
 	@Size(min = 3, max = 36, message = "Last Name Field Must be between 3 and 36")
 	private String lastName;
 

@@ -10,10 +10,10 @@ CREATE TABLE user (
     id BIGINT NOT NULL AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL,
     city VARCHAR(255) NOT NULL,
-    first_name VARCHAR(36),
-    last_name VARCHAR(36),
+    first_name VARCHAR(36) NOT NULL,
+    last_name VARCHAR(36) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    profile_picture VARCHAR(255),
+    profile_picture VARCHAR(255) NOT NULL,
     phone_number VARCHAR(10) NOT NULL,
     username VARCHAR(36) NOT NULL,
     PRIMARY KEY (id)
@@ -54,7 +54,7 @@ ON job (is_done);
 
 CREATE TABLE image_url (
     job_id BIGINT NOT NULL,
-    url VARCHAR(255)
+    url VARCHAR(255) NOT NULL
 )  ENGINE=INNODB;
 
 ALTER TABLE image_url

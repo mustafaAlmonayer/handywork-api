@@ -21,29 +21,17 @@ public class SecurityAspect {
 	@Autowired
 	private JwtService jwtService;	
 	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateEmail"
-			+ "(String, String, com.grad.handywork.dto.EmailDto))")
-	public void updateEmailPointCut() {}
-	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePhoneNumber"
-			+ "(String, String, com.grad.handywork.dto.PhoneNumberDto))")
-	public void updatePhoneNumberPointCut() {}
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePfpUrl"
+			+ "(String, String, com.grad.handywork.dto.PfpFileDto))")
+	public void updatePfpUrlPointCut() {}
 	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePassword"
 			+ "(String, String, com.grad.handywork.dto.PasswordDto))")
 	public void updatePasswordPointCut() {}
 	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateCity"
-			+ "(String, String, com.grad.handywork.dto.CityDto))")
-	public void updateCityPointCut() {}
-	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateFirstAndLastName"
-			+ "(String, String, com.grad.handywork.dto.FirstAndLastNameDto))")
-	public void updateFirstAndLastNamePointCut() {}
-	
-	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePfpUrl"
-			+ "(String, String, com.grad.handywork.dto.PfpFileDto))")
-	public void updatePfpUrlPointCut() {}
+	@Pointcut("execution(* com.grad.handywork.controller.UserController.updateMain"
+			+ "(String, String, com.grad.handywork.dto.UserUpdateMainDto))")
+	public void updateMainPointCut() {};
 	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.saveJob"
 			+ "(String, String, com.grad.handywork.dto.JobDto))")
@@ -53,17 +41,12 @@ public class SecurityAspect {
 			+ "(String, Long, com.grad.handywork.dto.JobUpdateDto))")
 	public void updateJobPointCut() {}
 	
-	@Pointcut("updateEmailPointCut()"
-			+ "||"
-			+ "updatePhoneNumberPointCut()"
+
+	@Pointcut("updatePfpUrlPointCut()"
 			+ "||"
 			+ "updatePasswordPointCut()"
 			+ "||"
-			+ "updateCityPointCut()"
-			+ "||"
-			+ "updateFirstAndLastNamePointCut()"
-			+ "||"
-			+ "updatePfpUrlPointCut()"
+			+ "updateMainPointCut()"
 			+ "||"
 			+ "saveJobPointCut()")
 	public void secureUserUpdateAndJobSavePointCut() {}
@@ -71,7 +54,6 @@ public class SecurityAspect {
 	@Order(value = 0)
 	@Before("secureUserUpdateAndJobSavePointCut() && args(username, bearerToken, *)") 
 	public void secureUserUpdateAndJobSave(String username, String bearerToken) {
-		System.out.println("from security");
 		if(!jwtService.extractUsername(bearerToken.substring(7)).equals(username)) 
 			throw new ResourceAccessException(username + ": Is Not The Resource Owner");
 	}
@@ -84,7 +66,6 @@ public class SecurityAspect {
 		);
 		if(!jwtService.extractUsername(bearerToken.substring(7)).equals(dbJob.getOwner().getUsername()))
 			throw new ResourceAccessException(dbJob.getOwner().getUsername() + ": Is Not The Resource Owner");
-		
 	}
 		
 }

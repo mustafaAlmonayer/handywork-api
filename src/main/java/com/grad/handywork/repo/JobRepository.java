@@ -13,9 +13,9 @@ import com.grad.handywork.entity.Job;
 @Repository("JobRepository")
 public interface JobRepository extends JpaRepository<Job, Long>{
 	
-	Page<Job> findAllByDoneAndOwnerUsernameNot(boolean done, String username,PageRequest pageRequest);
-	
 	List<Job> findAllByOwnerId(Long ownerId, Sort sort);
+	
+	Page<Job> findAllByDoneAndOwnerUsernameNot(boolean done, String username,PageRequest pageRequest);
 	
 	Page<Job> findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, String username, String city, boolean done, PageRequest pageRequest);
 	
