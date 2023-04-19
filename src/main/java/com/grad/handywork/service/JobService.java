@@ -68,7 +68,7 @@ public class JobService {
 		} else if (StringUtils.hasText(field) && !StringUtils.hasText(city)) {
 			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+field+"%", false, username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		} else {
-			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+field+"%", "%"+city+"%", username, false, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%"+field+"%", "%"+city+"%", false, username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC ,"publishDate")));
 		}
 		List<JobDto> dtos =new ArrayList<>();
 		jobs.stream()

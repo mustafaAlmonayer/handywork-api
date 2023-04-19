@@ -19,7 +19,7 @@ public interface JobRepository extends JpaRepository<Job, Long>{
 	
 	Page<Job> findAllByDoneAndOwnerUsernameNot(boolean done, String username,PageRequest pageRequest);
 	
-	Page<Job> findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, String username, String city, boolean done, PageRequest pageRequest);
+	Page<Job> findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, String city, boolean done, String username, PageRequest pageRequest);
 	
 	Page<Job> findByFieldIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, boolean done, String username, PageRequest pageRequest);
 	
