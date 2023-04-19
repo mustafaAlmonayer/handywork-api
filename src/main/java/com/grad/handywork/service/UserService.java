@@ -3,6 +3,7 @@ package com.grad.handywork.service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.JobDto;
+import com.grad.handywork.dto.JobOfferDto;
 import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.UserDto;
@@ -19,6 +21,7 @@ import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.mapper.JobMapper;
+import com.grad.handywork.mapper.JobOfferMapper;
 import com.grad.handywork.mapper.UserMapper;
 import com.grad.handywork.repo.JobRepository;
 import com.grad.handywork.repo.UserRepository;
@@ -31,6 +34,9 @@ public class UserService {
 
 	@Autowired
 	private JobMapper jobMapper;
+
+	@Autowired
+	private JobOfferMapper jobOfferMapper;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -55,6 +61,8 @@ public class UserService {
 		if (job.getCity() == null) {
 			job.setCity(user.getCity());
 		}
+		job.setCity(job.getCity().toLowerCase());
+		job.setField(job.getField().toLowerCase());
 		job.setOwner(user);
 		jobRepository.save(job);
 	}
@@ -95,6 +103,14 @@ public class UserService {
 		user.setPfpUrl(pfpFileDto.getPfpUrl());
 		userRepository.save(user);
 		return user.getPfpUrl();
+	}
+
+	public List<JobOfferDto> getAllOffers(String username) {
+		User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException(username));
+		List<JobOfferDto> dtos = user.getJobOffers().stream()
+				.map(jobOffer -> jobOfferMapper.jobOfferToJobOfferDto(jobOffer)).collect(Collectors.toList());
+		dtos.sort(Comparator.comparing(JobOfferDto::getId).reversed());
+		return dtos;
 	}
 
 }

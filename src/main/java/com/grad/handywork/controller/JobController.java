@@ -1,5 +1,7 @@
 package com.grad.handywork.controller;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,16 @@ public class JobController {
 	@GetMapping("/{id}")
 	public ResponseEntity<JobDto> getJobById(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.gtJobById(id), HttpStatus.OK);
+	}
+	
+	@GetMapping("/cities")
+	public ResponseEntity<Set<String>> getAllCities(){
+		return new ResponseEntity<>(jobService.getAllCities(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/fields")
+	public ResponseEntity<Set<String>> getAllFields(){
+		return new ResponseEntity<>(jobService.getAllFields(), HttpStatus.OK);
 	}
 
 	@PatchMapping("/{id}/update")

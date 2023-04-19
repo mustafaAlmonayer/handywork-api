@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.JobDto;
+import com.grad.handywork.dto.JobOfferDto;
 import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.dto.UserUpdateMainDto;
+import com.grad.handywork.entity.JobOffer;
 import com.grad.handywork.service.UserService;
 
 @RestController
@@ -71,6 +73,12 @@ public class UserController {
 	public ResponseEntity<String> updatePfpUrl(@PathVariable String username,
 			@RequestHeader("Authorization") String bearerToken, @Validated @RequestBody PfpFileDto pfpFileDto) {
 		return new ResponseEntity<>(userService.updatePfpUrl(username, pfpFileDto), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{username}/offers")
+	public ResponseEntity<List<JobOfferDto>> getAllOffersByUsername(@PathVariable String username) {
+		return new ResponseEntity<>(userService.getAllOffers(username), HttpStatus.OK);
+		
 	}
 
 }

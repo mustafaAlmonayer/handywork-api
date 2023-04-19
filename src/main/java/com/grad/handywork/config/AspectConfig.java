@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import com.grad.handywork.aop.JobOfferPreprocessAspect;
 import com.grad.handywork.aop.JobPreprocessAspect;
 import com.grad.handywork.aop.SecurityAspect;
 import com.grad.handywork.aop.UserPreprocessAspect;
@@ -32,6 +33,11 @@ public class AspectConfig {
 	@Bean
 	public JobPreprocessAspect JobAspect() {
 		return new JobPreprocessAspect();
+	}
+	
+	@Bean
+	public JobOfferPreprocessAspect jobOfferPreprocessAspect() {
+		return new JobOfferPreprocessAspect();
 	}
 
 }

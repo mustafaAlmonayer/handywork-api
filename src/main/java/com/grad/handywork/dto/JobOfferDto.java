@@ -14,7 +14,9 @@ public class JobOfferDto {
 	
 	private Long id;
 	
-	private Long job;
+	private String jobTitle;
+	
+	private Long jobId;
 	
 	private String user;
 	

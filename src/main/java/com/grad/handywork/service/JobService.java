@@ -3,6 +3,8 @@ package com.grad.handywork.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.grad.handywork.controller.JobController;
 import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;
@@ -73,6 +76,16 @@ public class JobService {
 					(job) -> dtos.add(jobMapper.jobToJobDtoForBrowse(job))
 			);
 		return AllJobsDto.builder().jobs(dtos).numOfPages(jobs.getTotalPages()).build();
+	}
+	
+	public Set<String> getAllCities() {
+		Set<String> cities = jobRepository.findAllCities();
+		return cities.stream().map(city -> city.toLowerCase()).collect(Collectors.toSet());
+	}
+	
+	public Set<String> getAllFields() {
+		Set<String> fields = jobRepository.findAllFields();
+		return fields.stream().map(field -> field.toLowerCase()).collect(Collectors.toSet());
 	}
 	
 	public JobDto updateJob(Long id, JobUpdateDto jobUpdateDto) {

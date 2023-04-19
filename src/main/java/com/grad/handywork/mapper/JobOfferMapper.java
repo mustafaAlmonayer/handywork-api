@@ -9,10 +9,12 @@ import com.grad.handywork.entity.JobOffer;
 @Mapper
 public interface JobOfferMapper {
 
-	@Mapping(target = "job", source = "id")
+	@Mapping(target = "jobTitle", source = "job.jobName")
+	@Mapping(target = "jobId", source = "job.id")
 	@Mapping(target = "user", source = "user.id")
 	JobOfferDto jobOfferToJobOfferDto(JobOffer jobOffer);
 	
+	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "job", ignore = true)
 	@Mapping(target = "user", ignore = true)
 	@Mapping(target = "accepted", ignore = true)
