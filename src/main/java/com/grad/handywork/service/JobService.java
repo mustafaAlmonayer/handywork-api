@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.grad.handywork.controller.JobController;
 import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;

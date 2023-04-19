@@ -22,7 +22,6 @@ import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.dto.UserUpdateMainDto;
-import com.grad.handywork.entity.JobOffer;
 import com.grad.handywork.service.UserService;
 
 @RestController
