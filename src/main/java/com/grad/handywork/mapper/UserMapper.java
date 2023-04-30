@@ -17,7 +17,8 @@ public interface UserMapper {
 	@Mapping(target= "authorities", ignore = true)
 	@Mapping(target= "jobs", ignore = true)
 	@Mapping(target="jobOffers", ignore = true)
-	@Mapping(target="jobReviews", ignore = true)
+	@Mapping(target="ownedJobReviews", ignore = true)
+	@Mapping(target="onJobReviews", ignore = true)
 	User userDtoToUserForSave(UserDto userDto);
 	
 }

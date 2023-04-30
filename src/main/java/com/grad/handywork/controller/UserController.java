@@ -77,7 +77,6 @@ public class UserController {
 	@GetMapping("/{username}/offers")
 	public ResponseEntity<List<JobOfferDto>> getAllOffersByUsername(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getAllOffers(username), HttpStatus.OK);
-		
 	}
 
 }

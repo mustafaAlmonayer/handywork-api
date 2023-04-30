@@ -30,4 +30,5 @@ public interface JobRepository extends JpaRepository<Job, Long>{
 	
 	@Query("SELECT j.field FROM Job j")
 	Set<String> findAllFields();
+	
 }

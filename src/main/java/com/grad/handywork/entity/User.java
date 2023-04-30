@@ -91,9 +91,13 @@ public class User implements UserDetails {
 			CascadeType.REMOVE }, fetch = FetchType.LAZY)
 	private List<JobOffer> jobOffers = new ArrayList<>();
 	
-	@OneToMany(mappedBy = "user", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+	@OneToMany(mappedBy = "byUser", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.REMOVE }, fetch = FetchType.LAZY)
-	private List<JobReview> jobReviews = new ArrayList<>();
+	private List<JobReview> ownedJobReviews = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "onUser", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
+			CascadeType.REMOVE }, fetch = FetchType.LAZY)
+	private List<JobReview> onJobReviews = new ArrayList<>();
 
 	@Transient
 	private String pfpFile;
@@ -104,7 +108,7 @@ public class User implements UserDetails {
 
 	public User(Long id, String username, String password, String firstName, String lastName, String email,
 			String phoneNumber, String pfpUrl, String city, List<Job> jobs, List<JobOffer> jobOffers,
-			List<JobReview> jobReviews, String pfpFile) {
+			List<JobReview> ownedJobReviews, String pfpFile) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -117,7 +121,7 @@ public class User implements UserDetails {
 		this.pfpUrl = pfpUrl;
 		this.jobs = jobs;
 		this.jobOffers = jobOffers;
-		this.jobReviews = jobReviews;
+		this.ownedJobReviews = ownedJobReviews;
 		this.pfpFile = pfpFile;
 	}
 
@@ -219,12 +223,20 @@ public class User implements UserDetails {
 		this.jobOffers = jobOffers;
 	}
 
-	public List<JobReview> getJobReviews() {
-		return jobReviews;
+	public List<JobReview> getOwnedJobReviews() {
+		return ownedJobReviews;
 	}
 
-	public void setJobReviews(List<JobReview> jobReviews) {
-		this.jobReviews = jobReviews;
+	public void setOwnedJobReviews(List<JobReview> jobReviews) {
+		this.ownedJobReviews = jobReviews;
+	}
+
+	public List<JobReview> getOnJobReviews() {
+		return onJobReviews;
+	}
+
+	public void setOnJobReviews(List<JobReview> onJobReviews) {
+		this.onJobReviews = onJobReviews;
 	}
 
 	public String getPfpFile() {
@@ -266,7 +278,8 @@ public class User implements UserDetails {
 				+ ", city=" + city 
 				+ ", jobs=" + jobs.stream().map(job -> job.getId() + ", ").collect(Collectors.toList())
 				+ ", jobOffers=" + jobOffers.stream().map(jobOffer -> jobOffer.getId() + ", ").collect(Collectors.toList())
-				+ ", jobReviews=" + jobReviews.stream().map(jobReview -> jobReview.getId() + ", ").collect(Collectors.toList())
+				+ ", ownedJobReviews=" + ownedJobReviews.stream().map(jobReview -> jobReview.getId() + ", ").collect(Collectors.toList())
+				+ ", onJobReviews=" + onJobReviews.stream().map(jobReview -> jobReview.getId() + ", ").collect(Collectors.toList())
 				+ ", pfpFile=" + pfpFile 
 				+ "]";
 	}

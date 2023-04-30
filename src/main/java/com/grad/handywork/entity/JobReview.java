@@ -16,7 +16,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "job_review")
@@ -31,14 +35,21 @@ public class JobReview {
 	private Job job;
 	
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-	@JoinColumn(name = "user_id")
-	private User user;
+	@JoinColumn(name = "by_user_id")
+	private User byUser;
+	
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+	@JoinColumn(name = "on_user_id")
+	private User onUser;
 	
 	@Column(name = "type", columnDefinition = "ENUM('JOB_REVIEW', 'USER_REVIEW')")
 	@Enumerated(EnumType.STRING)
 	private JobReviewType type;
 	
 	@Column(name = "rating")
+	@Min(value = 1, message = "Ratting Cannot Be Less Than 1")
+	@Max(value = 5, message = "Ratting Cannot Be More Than 5")
+	@NotNull(message = "Ratting Cannot Be Empty")
 	private byte rating;
 	
 	@Column(name = "publish_date")
@@ -50,6 +61,8 @@ public class JobReview {
 	private LocalDateTime updateDate;
 	
 	@Column(name = "review_text")
+	@NotNull(message = "Review Text Cannot Be Empty")
+	@Size(min = 15, max = 512, message = "Description Field Cannot Be Less Than 15 Or bigger Than 512")
 	private String reviewText;
 
 	public JobReview() {
@@ -61,7 +74,7 @@ public class JobReview {
 		super();
 		this.id = id;
 		this.job = job;
-		this.user = user;
+		this.byUser = user;
 		this.type = type;
 		this.rating = rating;
 		this.publishDate = publishDate;
@@ -87,14 +100,23 @@ public class JobReview {
 			job.getJobReviews().add(this);
 	}
 
-	public User getUser() {
-		return user;
+	public User getByUser() {
+		return byUser;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
-		if (user != null)
-			user.getJobReviews().add(this);
+	public void setByUser(User byUser) {
+		this.byUser = byUser;
+		if (byUser != null)
+			byUser.getOwnedJobReviews().add(this);
+	}
+
+	public User getOnUser() {
+		return onUser;
+	}
+
+	public void setOnUser(User onUser) {
+		this.onUser = onUser;
+		onUser.getOnJobReviews().add(this);
 	}
 
 	public JobReviewType getType() {
@@ -159,7 +181,8 @@ public class JobReview {
 		return "JobReview ["
 				+ "id=" + id 
 				+ ", job=" + job.getId() 
-				+ ", user=" + user.getId() 
+				+ ", byUser=" + byUser.getId()
+				+ ", onUser=" + onUser.getId() 
 				+ ", type=" + type 
 				+ ", rating=" + rating
 				+ ", publishDate=" + publishDate 

@@ -50,15 +50,17 @@ public class UserPreprocessAspect {
 	
 	@Before("saveUserPointCut() && args(userDto)")
 	public void beforeSaveUser(UserDto userDto) {
-		System.out.println("from security");
-		System.out.println(userDto);
 		String base64File = userDto.getPfpFile();
 		userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-		if(base64File == null || base64File.isEmpty()) {
-			 userDto.setPfpUrl(DEFAULT_PFP_URL);
-			 return;
+		if (base64File == null || base64File.isEmpty()) {
+			userDto.setPfpUrl(DEFAULT_PFP_URL);
+			return;
 		}
-		userDto.setPfpUrl(cloudinaryService.imageToUrl(userDto.getPfpFile()));
+		try {
+			userDto.setPfpUrl(cloudinaryService.imageToUrl(userDto.getPfpFile()));
+		} catch (RuntimeException e) {
+			userDto.setPfpUrl(DEFAULT_PFP_URL);
+		}
 		userDto.setPfpFile(null);
 	}
 	
@@ -89,7 +91,7 @@ public class UserPreprocessAspect {
 	@Order(value = 1)
 	@Before("saveJobPointCut() && args(*, *, jobDto)")
 	public void beforeSaveJob(JobDto jobDto) {
-		if(jobDto.getImagesFiles() == null || jobDto.getImagesFiles().get(0) == "") {
+		if (jobDto.getImagesFiles() == null || jobDto.getImagesFiles().isEmpty()) {
 			jobDto.setImagesUrls(Arrays.asList(DEFAULT_JOB_P_URL));
 		} else {
 			jobDto.setImagesUrls(cloudinaryService.imageToUrl(jobDto.getImagesFiles()));

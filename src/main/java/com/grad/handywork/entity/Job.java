@@ -40,12 +40,13 @@ public class Job {
 	private User doneBy;
 
     @Column(name = "field")
+    @Size(min = 3, max = 36, message = "\"Field\" Field Cannot Be Less Than 3 Or bigger Than 36")
     @NotNull(message = "\"Field\" Field cannot be empty")
 	private String field;
     
     @Column(name = "description")
     @NotNull(message = "Description Field Cannot Be Empty")
-    @Size(min = 15, message =  "Description Field Cannot Be Less Than 15")
+    @Size(min = 15, max = 512, message =  "Description Field Cannot Be Less Than 15 Or bigger Than 512")
 	private String description;
 
     @Column(name = "publish_date")
@@ -57,6 +58,7 @@ public class Job {
 	private LocalDateTime updateDate;
 
     @Column(name = "job_name")
+    @Size(min = 3, max = 36, message =  "Tile Field Cannot Be Less Than 3 Or bigger Than 36")
     @NotNull(message = "Cannot Be Empty")
 	private String jobName;
     
@@ -72,6 +74,7 @@ public class Job {
 	private boolean done;
     
     @Column(name="city")
+    @Size(min = 3, max = 36, message =  "City Field Cannot Be Less Than 3 Or bigger Than 36")
     private String city;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "job")

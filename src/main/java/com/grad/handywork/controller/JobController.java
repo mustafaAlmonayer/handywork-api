@@ -1,5 +1,6 @@
 package com.grad.handywork.controller;
 
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.grad.handywork.dto.AllJobsDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;
+import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.dto.JobUpdateDto;
 import com.grad.handywork.service.JobService;
 
@@ -55,7 +57,6 @@ public class JobController {
 	public ResponseEntity<JobDto> updateJob(@RequestHeader("Authorization") String BearerToken, @PathVariable Long id,
 			@Validated @RequestBody JobUpdateDto jobUpdateDto) {
 		return new ResponseEntity<>(jobService.updateJob(id, jobUpdateDto), HttpStatus.OK);
-
 	}
 	
 	@PostMapping("/{id}/makeOffer")
@@ -63,6 +64,23 @@ public class JobController {
 			@Validated @RequestBody JobOfferDto jobOfferDto) {
 		jobService.makeOffer(jobOfferDto, bearerToken, id);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@GetMapping("/{id}/offers")
+	public ResponseEntity<List<JobOfferDto>> getOffers(@PathVariable Long id) {
+		return new ResponseEntity<>(jobService.getOffers(id), HttpStatus.OK);
+	}
+	
+	@PostMapping("/{id}/makeReview")
+	public ResponseEntity<Void> makeReview(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,
+			@Validated @RequestBody JobReviewDto jobReviewDto) {
+		jobService.makeReview(bearerToken, id, jobReviewDto);
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@GetMapping("/{id}/reviews")
+	public ResponseEntity<List<JobReviewDto>> getReviews(@PathVariable Long id) {
+		return new ResponseEntity<>(jobService.getJobReviews(id), HttpStatus.OK);
 	}
 
 }

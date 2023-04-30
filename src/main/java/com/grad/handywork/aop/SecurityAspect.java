@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.client.ResourceAccessException;
 
+import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.JobOffer;
 import com.grad.handywork.entity.User;
@@ -112,6 +113,23 @@ public class SecurityAspect {
 		if(!username.equals(user.getUsername())) {
 			throw new ResourceAccessException(username + ": Is Not The Resource Owner");
 		}
+	}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.JobController.makeReview"
+			+ "(String, Long, com.grad.handywork.dto.JobReviewDto))")
+	public void makeReviewPointCut() {}
+	
+	@Order(value = 0)
+	@Before("makeReviewPointCut() && args(bearerToken, id, jobReviewDto)")
+	public void secureMakeReview(String bearerToken, Long id, JobReviewDto jobReviewDto) {
+		String username = jwtService.extractUsername(bearerToken.substring(7));
+		Job job = jobRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Job With ID: " + id + " Not Found"));
+		if (!job.isDone())
+			throw new ResourceAccessException("Job With ID: " + id + " Is Not Finished");
+		if (!username.equals(job.getOwner().getUsername()) && !username.equals(job.getDoneBy().getUsername()))
+			throw new ResourceAccessException(
+					"User Wiht Username: " + username + " Is Not The Job Owner Nor The One Who Finished The Job");
 	}
 		
 }

@@ -11,16 +11,16 @@ import com.grad.handywork.repo.JobRepository;
 
 @Service
 public class OfferService {
-	
+
 	@Autowired
 	private JobOfferRepository jobOfferRepository;
-	
+
 	@Autowired
 	private JobRepository jobRepository;
-	
+
 	public void acceptOffer(Long id) {
-		JobOffer jobOffer = jobOfferRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
+		JobOffer jobOffer = jobOfferRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
 		jobOffer.setAccepted(true);
 		jobOfferRepository.save(jobOffer);
 		Job job = jobRepository.findById(jobOffer.getJob().getId()).orElseThrow(
@@ -30,17 +30,17 @@ public class OfferService {
 		jobRepository.save(job);
 		jobOfferRepository.deleteAllByJobAndAcceptedNot(job, true);
 	}
-	
+
 	public void rejectOffer(Long id) {
-		JobOffer jobOffer = jobOfferRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
+		JobOffer jobOffer = jobOfferRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
 		jobOffer.setRejected(true);
 		jobOfferRepository.save(jobOffer);
 	}
-	
+
 	public void deleteOffer(Long id) {
-		JobOffer jobOffer = jobOfferRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
+		JobOffer jobOffer = jobOfferRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Offer Wiht ID: " + id + " Not Found"));
 		jobOfferRepository.delete(jobOffer);
 	}
 
