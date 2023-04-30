@@ -48,8 +48,6 @@ public class UserService {
 	private JwtService jwtService;
 
 	public AuthDto saveUser(UserDto user) {
-		System.out.println("from service");
-		System.out.println(user);
 		User savedUser = userRepository.save(userMapper.userDtoToUserForSave(user));
 		String jwtToken = jwtService.generateToken(savedUser);
 		return AuthDto.builder().token(jwtToken).build();
