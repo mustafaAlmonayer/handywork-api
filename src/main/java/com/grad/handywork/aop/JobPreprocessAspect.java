@@ -38,5 +38,19 @@ public class JobPreprocessAspect {
 		if (job.getOwner().getUsername().equals(username))
 			throw new ResourceAccessException("You Cannot Make An Offer On your On Job");
 	}
-
+	
+	@Pointcut("execution(* com.grad.handywork.controller.JobController.deleteJob"
+			+ "(String, Long))")
+	public void deleteJobPointCut() {}
+	
+	@Order(value = 1)
+	@Before("deleteJobPointCut() && args(bearerToken, id)")
+	public void beforeDeleteJob(String bearerToken, Long id) {
+		Job job = jobRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Job With ID: " + id + " Not Found"));
+		if (job.isDone()) {
+			throw new ResourceAccessException("You Cannot Delete A Finished Job");
+		}
+	}
+ 
 }

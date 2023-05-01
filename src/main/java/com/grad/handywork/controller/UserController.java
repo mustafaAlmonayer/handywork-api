@@ -13,15 +13,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;
+import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
+import com.grad.handywork.dto.RatingsDto;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.dto.UserUpdateMainDto;
+import com.grad.handywork.enumtypes.JobReviewType;
 import com.grad.handywork.service.UserService;
 
 @RestController
@@ -77,6 +81,16 @@ public class UserController {
 	@GetMapping("/{username}/offers")
 	public ResponseEntity<List<JobOfferDto>> getAllOffersByUsername(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getAllOffers(username), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{username}/ratings")
+	public ResponseEntity<RatingsDto> getRatings(@PathVariable String username) {
+		return new ResponseEntity<>(userService.getRatings(username), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{username}/reviews")
+	public ResponseEntity<List<JobReviewDto>> getJobReviewAsLister(@PathVariable String username, @RequestParam JobReviewType type) {
+		return new ResponseEntity<>(userService.getJobReviews(username, type), HttpStatus.OK);
 	}
 
 }

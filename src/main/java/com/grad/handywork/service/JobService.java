@@ -167,5 +167,16 @@ public class JobService {
 		return job.getJobReviews().stream().map(jobReviewDto -> jobReviewMapper.jobReviewToJobReviewDto(jobReviewDto))
 				.collect(Collectors.toList());
 	}
+	
+	public void deleteJob(Long id) {
+		Job job = jobRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Job Wit ID: " + id + " Not Found"));
+		job.setOwner(null);
+		job.setDoneBy(null);
+		job.setImagesUrls(null);
+		job.setJobOffers(null);
+		job.setJobReviews(null);
+		jobRepository.delete(job);
+	}
 
 }

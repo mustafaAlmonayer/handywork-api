@@ -10,10 +10,12 @@ import org.springframework.web.client.ResourceAccessException;
 import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.JobOffer;
+import com.grad.handywork.entity.JobReview;
 import com.grad.handywork.entity.User;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.repo.JobOfferRepository;
 import com.grad.handywork.repo.JobRepository;
+import com.grad.handywork.repo.JobReviewRepository;
 import com.grad.handywork.service.JwtService;
 
 @Aspect
@@ -24,6 +26,9 @@ public class SecurityAspect {
 	
 	@Autowired
 	private JobOfferRepository jobOfferRepository;
+	
+	@Autowired
+	private JobReviewRepository jobReviewRepository;
 	
 	@Autowired
 	private JwtService jwtService;	
@@ -64,8 +69,17 @@ public class SecurityAspect {
 			+ "(String, Long, com.grad.handywork.dto.JobUpdateDto))")
 	public void updateJobPointCut() {}
 	
+	@Pointcut("execution(* com.grad.handywork.controller.JobController.deleteJob"
+			+ "(String, Long))")
+	public void deleteJobPointCut() {}
+	
+	@Pointcut("updateJobPointCut()"
+			+ "||"
+			+ "deleteJobPointCut()")
+	public void deleteAndUpdateJobPointCut() {}
+	
 	@Order(value = 0)
-	@Before("updateJobPointCut()  && args(bearerToken, id, *)")
+	@Before("deleteAndUpdateJobPointCut()  && args(bearerToken, id)")
 	public void secureUpdateJob(String bearerToken, Long id) {
 		Job dbJob = jobRepository.findById(id).orElseThrow(
 				() -> new ResourceNotFoundException("Job With ID: " + id + " Not Found")
@@ -130,6 +144,30 @@ public class SecurityAspect {
 		if (!username.equals(job.getOwner().getUsername()) && !username.equals(job.getDoneBy().getUsername()))
 			throw new ResourceAccessException(
 					"User Wiht Username: " + username + " Is Not The Job Owner Nor The One Who Finished The Job");
+	}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.ReviewController.updateJobReview"
+			+ "(String, Long, com.grad.handywork.dto.JobReviewDto))")
+	public void updateReviewPointCut() {}
+	
+	@Pointcut("execution(* com.grad.handywork.controller.ReviewController.deleteJobReview"
+			+ "(String, Long))")
+	public void deleteReviewPointCut() {}
+	
+	@Pointcut("updateReviewPointCut()"
+			+ "||"
+			+ "deleteReviewPointCut()")
+	public void seureDeleteAndUpdateReviewPointCut() {}
+	
+	@Order(value = 0)
+	@Before("seureDeleteAndUpdateReviewPointCut() && args(bearerToken, id)")
+	public void secureUpdateReview(String bearerToken, Long id) {
+		String username = jwtService.extractUsername(bearerToken.substring(7));
+		JobReview jobReview = jobReviewRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Job Review With ID: " + id + " Not Found"));
+		if (!username.equals(jobReview.getByUser().getUsername())) {
+			throw new ResourceAccessException("User With Username " + username + " Not Found");
+		}
 	}
 		
 }

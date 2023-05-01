@@ -13,15 +13,21 @@ import org.springframework.stereotype.Service;
 import com.grad.handywork.dto.AuthDto;
 import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;
+import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.dto.PasswordDto;
 import com.grad.handywork.dto.PfpFileDto;
+import com.grad.handywork.dto.RatingsDto;
+import com.grad.handywork.dto.RatingsDto.RatingsDtoBuilder;
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.dto.UserUpdateMainDto;
 import com.grad.handywork.entity.Job;
+import com.grad.handywork.entity.JobReview;
 import com.grad.handywork.entity.User;
+import com.grad.handywork.enumtypes.JobReviewType;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.mapper.JobMapper;
 import com.grad.handywork.mapper.JobOfferMapper;
+import com.grad.handywork.mapper.JobReviewMapper;
 import com.grad.handywork.mapper.UserMapper;
 import com.grad.handywork.repo.JobRepository;
 import com.grad.handywork.repo.UserRepository;
@@ -37,6 +43,9 @@ public class UserService {
 
 	@Autowired
 	private JobOfferMapper jobOfferMapper;
+	
+	@Autowired
+	private JobReviewMapper jobReviewMapper;
 
 	@Autowired
 	private UserRepository userRepository;
@@ -109,6 +118,61 @@ public class UserService {
 				.map(jobOffer -> jobOfferMapper.jobOfferToJobOfferDto(jobOffer)).collect(Collectors.toList());
 		dtos.sort(Comparator.comparing(JobOfferDto::getId).reversed());
 		return dtos;
+	}
+	
+	public RatingsDto getRatings(String username) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException(username));
+		RatingsDtoBuilder ratingsDtoBuilder = RatingsDto.builder();
+		List<JobReview> asListerJobReview = user.getOnJobReviews()
+				.stream()
+				.filter(review -> review.getType() == JobReviewType.USER_REVIEW)
+				.collect(Collectors.toList());
+		List<JobReview> asProfessionalJobReviews = user.getOnJobReviews()
+				.stream()
+				.filter(review -> review.getType() == JobReviewType.JOB_REVIEW)
+				.collect(Collectors.toList());
+		if (asListerJobReview.isEmpty()) {
+			ratingsDtoBuilder.asListerRating(-1f);
+		} else {
+			float asListerRating = 0f; 
+			for (JobReview jobReview : asListerJobReview) {
+				asListerRating += (float) jobReview.getRating();
+			}
+			asListerRating /= (float) asListerJobReview.size();
+			ratingsDtoBuilder.asListerRating(asListerRating);
+		}
+		if(asProfessionalJobReviews.isEmpty()) {
+			ratingsDtoBuilder.asProfessionalRating(-1f);
+		} else {
+			float asProfessionalRating = 0f;
+			for (JobReview jobReview : asProfessionalJobReviews) {
+				asProfessionalRating += (float) jobReview.getRating();
+			}
+			asProfessionalRating /= (float) asProfessionalJobReviews.size();
+			ratingsDtoBuilder.asProfessionalRating(asProfessionalRating);
+		}
+		return ratingsDtoBuilder.build();
+	}
+	
+	public List<JobReviewDto> getJobReviews(String username, JobReviewType type) {
+		User user = userRepository.findByUsername(username)
+				.orElseThrow(() -> new ResourceNotFoundException(username));
+		List<JobReviewDto> jobReviewDtos;
+		if (JobReviewType.USER_REVIEW.equals(type)) {
+			jobReviewDtos = user.getOnJobReviews()
+					.stream()
+					.filter(review -> review.getType() == JobReviewType.USER_REVIEW)
+					.map(review -> jobReviewMapper.jobReviewToJobReviewDto(review))
+					.collect(Collectors.toList());
+		} else {
+			jobReviewDtos = user.getOnJobReviews()
+					.stream()
+					.filter(review -> review.getType() == JobReviewType.JOB_REVIEW)
+					.map(review -> jobReviewMapper.jobReviewToJobReviewDto(review))
+					.collect(Collectors.toList());
+		}
+		return jobReviewDtos;
 	}
 
 }
