@@ -1,5 +1,7 @@
 package com.grad.handywork.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -11,7 +13,9 @@ public interface JobOfferMapper {
 
 	@Mapping(target = "jobTitle", source = "job.jobName")
 	@Mapping(target = "jobId", source = "job.id")
+	@Mapping(target = "jobImageUrl", source = "job.imagesUrls")
 	@Mapping(target = "user", source = "user.id")
+	@Mapping(target = "userImageUrl", source = "user.pfpUrl")
 	JobOfferDto jobOfferToJobOfferDto(JobOffer jobOffer);
 	
 	@Mapping(target = "id", ignore = true)
@@ -21,4 +25,7 @@ public interface JobOfferMapper {
 	@Mapping(target = "rejected", ignore = true)
 	JobOffer jobOfferDtoToJobOffer(JobOfferDto jobOfferDto);
 	
+	default String mapListOfStringToString(List<String> list) {
+		return list.get(0);
+	}
 }

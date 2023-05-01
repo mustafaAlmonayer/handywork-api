@@ -18,7 +18,11 @@ public class JobOfferDto {
 	
 	private Long jobId;
 	
+	private String jobImageUrl;
+	
 	private String user;
+	
+	private String userImageUrl;
 	
 	@NotNull(message = "Amount Cannot Be Empty")
 	private Integer suggestedAmount;
