@@ -22,6 +22,9 @@ import com.grad.handywork.service.JwtService;
 public class SecurityAspect {
 	
 	@Autowired
+	private JwtService jwtService;	
+	
+	@Autowired
 	private JobRepository jobRepository;
 	
 	@Autowired
@@ -29,9 +32,6 @@ public class SecurityAspect {
 	
 	@Autowired
 	private JobReviewRepository jobReviewRepository;
-	
-	@Autowired
-	private JwtService jwtService;	
 	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.updatePfpUrl"
 			+ "(String, String, com.grad.handywork.dto.PfpFileDto))")
@@ -59,8 +59,8 @@ public class SecurityAspect {
 	public void secureUserUpdateAndJobSavePointCut() {}
 	
 	@Order(value = 0)
-	@Before("secureUserUpdateAndJobSavePointCut() && args(username, bearerToken, *)") 
-	public void secureUserUpdateAndJobSave(String username, String bearerToken) {
+	@Before("secureUserUpdateAndJobSavePointCut() && args(bearerToken, username, *)") 
+	public void secureUserUpdateAndJobSave(String bearerToken, String username) {
 		if(!jwtService.extractUsername(bearerToken.substring(7)).equals(username)) 
 			throw new ResourceAccessException(username + ": Is Not The Resource Owner");
 	}
@@ -79,13 +79,13 @@ public class SecurityAspect {
 	public void deleteAndUpdateJobPointCut() {}
 	
 	@Order(value = 0)
-	@Before("deleteAndUpdateJobPointCut()  && args(bearerToken, id)")
+	@Before("deleteAndUpdateJobPointCut()  && ( args(bearerToken, id, *) ||  args(bearerToken, id) )")
 	public void secureUpdateJob(String bearerToken, Long id) {
 		Job dbJob = jobRepository.findById(id).orElseThrow(
 				() -> new ResourceNotFoundException("Job With ID: " + id + " Not Found")
 		);
 		if(!jwtService.extractUsername(bearerToken.substring(7)).equals(dbJob.getOwner().getUsername()))
-			throw new ResourceAccessException(dbJob.getOwner().getUsername() + ": Is Not The Resource Owner");
+			throw new ResourceAccessException(jwtService.extractUsername(bearerToken.substring(7)) + ": Is Not The Resource Owner");
 	}
 	
 	@Pointcut("execution(* com.grad.handywork.controller.OfferController.acceptOffer"
@@ -160,13 +160,13 @@ public class SecurityAspect {
 	public void seureDeleteAndUpdateReviewPointCut() {}
 	
 	@Order(value = 0)
-	@Before("seureDeleteAndUpdateReviewPointCut() && args(bearerToken, id)")
+	@Before("seureDeleteAndUpdateReviewPointCut() && ( args(bearerToken, id) || args(bearerToken, id) )")
 	public void secureUpdateReview(String bearerToken, Long id) {
 		String username = jwtService.extractUsername(bearerToken.substring(7));
 		JobReview jobReview = jobReviewRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Job Review With ID: " + id + " Not Found"));
 		if (!username.equals(jobReview.getByUser().getUsername())) {
-			throw new ResourceAccessException("User With Username " + username + " Not Found");
+			throw new ResourceAccessException("User " + username + " Is Not Resource Owner");
 		}
 	}
 		

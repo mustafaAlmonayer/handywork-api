@@ -6,11 +6,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.grad.handywork.enumtypes.Cities;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -73,9 +77,11 @@ public class Job {
     @NotNull(message = "Cannot Be Empty")
 	private boolean done;
     
-    @Column(name="city")
-    @Size(min = 3, max = 36, message =  "City Field Cannot Be Less Than 3 Or bigger Than 36")
-    private String city;
+    @NotNull(message = "City Field Cannot be empty")
+    @Column(name="city", columnDefinition = "ENUM('IRBED', 'JERASH', 'AJLOUN', 'AMMAN', 'BALQAA',"
+    		+ " 'ZARQAA', 'MAFRAQ', 'MAAN', 'KARAK', 'AQABA', 'MADABA')")
+	@Enumerated(EnumType.STRING)
+    private Cities city;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "job")
     @Size(max = 2)
@@ -93,7 +99,7 @@ public class Job {
 	}
 
 	public Job(Long id, User owner, User doneBy, String field, String description, LocalDateTime publishDate,
-			LocalDateTime updateDate, String jobName, List<String> imagesUrls, String city, boolean isDone,
+			LocalDateTime updateDate, String jobName, List<String> imagesUrls, Cities city, boolean isDone,
 			List<JobReview> jobReview, List<JobOffer> jobOffers, List<String> imagesFiles) {
 		super();
 		this.id = id;
@@ -188,11 +194,11 @@ public class Job {
 		this.imagesUrls = imagesUrls;
 	}
 
-	public String getCity() {
+	public Cities getCity() {
 		return city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(Cities city) {
 		this.city = city;
 	}
 

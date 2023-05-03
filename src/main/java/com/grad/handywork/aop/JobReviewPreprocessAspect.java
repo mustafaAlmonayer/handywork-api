@@ -21,13 +21,13 @@ import com.grad.handywork.service.JwtService;
 public class JobReviewPreprocessAspect {
 	
 	@Autowired
+	private JwtService jwtService;
+	
+	@Autowired
 	private JobRepository jobRepository;
 	
 	@Autowired
 	private JobReviewRepository jobReviewRepository;
-	
-	@Autowired
-	private JwtService jwtService;
 	
 	@Pointcut("execution(* com.grad.handywork.controller.JobController.makeReview"
 			+ "(String, Long, com.grad.handywork.dto.JobReviewDto))")

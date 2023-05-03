@@ -35,59 +35,69 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
+	// OK
 	@PostMapping("/register")
 	public ResponseEntity<AuthDto> register(@RequestBody @Validated UserDto userDto) {
 		return new ResponseEntity<>(userService.saveUser(userDto), HttpStatus.OK);
 	}
 	
+	// OK
 	@PostMapping("/{username}/job/save")
-	public ResponseEntity<Void> saveJob(@PathVariable String username,
-			@RequestHeader("Authorization") String BearerToken, @Validated @RequestBody JobDto jobDto) {
+	public ResponseEntity<Void> saveJob(@RequestHeader("Authorization") String BearerToken,
+			@PathVariable String username, @Validated @RequestBody JobDto jobDto) {
 		userService.saveJob(jobDto, username);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	// OK
 	@GetMapping("/{username}")
-	public ResponseEntity<UserDto> getUser(@PathVariable String username,
-			@RequestHeader("Authorization") String bearerToken) {
+	public ResponseEntity<UserDto> getUser(@RequestHeader("Authorization") String BearerToken,
+			@PathVariable String username) {
 		return new ResponseEntity<>(userService.getUser(username), HttpStatus.OK);
 	}
-
+	
+	// OK
 	@GetMapping("/{username}/job/all")
 	public ResponseEntity<List<JobDto>> getAllJobsByUsername(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getAllJobsByUsername(username), HttpStatus.OK);
 	}
 	
+	// OK
 	@PatchMapping("{username}/update/main")
-	public ResponseEntity<Void> updateMain(@PathVariable String username,
-			@RequestHeader("Authorization") String bearerToken, @Validated @RequestBody UserUpdateMainDto userUpdateMainDto) {
+	public ResponseEntity<Void> updateMain(@RequestHeader("Authorization") String BearerToken,
+			@PathVariable String username, @Validated @RequestBody UserUpdateMainDto userUpdateMainDto) {
 		userService.updateMain(username, userUpdateMainDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@PatchMapping("/{username}/update/password")
-	public ResponseEntity<Void> updatePassword(@PathVariable String username,
-			@RequestHeader("Authorization") String bearerToken, @Validated @RequestBody PasswordDto passwordDto) {
+	public ResponseEntity<Void> updatePassword(@RequestHeader("Authorization") String BearerToken,
+			@PathVariable String username, @Validated @RequestBody PasswordDto passwordDto) {
 		userService.updatePassword(username, passwordDto);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@PatchMapping("/{username}/update/pfpUrl")
-	public ResponseEntity<String> updatePfpUrl(@PathVariable String username,
-			@RequestHeader("Authorization") String bearerToken, @Validated @RequestBody PfpFileDto pfpFileDto) {
+	public ResponseEntity<String> updatePfpUrl(@RequestHeader("Authorization") String BearerToken,
+			@PathVariable String username, @Validated @RequestBody PfpFileDto pfpFileDto) {
 		return new ResponseEntity<>(userService.updatePfpUrl(username, pfpFileDto), HttpStatus.OK);
 	}
 	
+	// OK
 	@GetMapping("/{username}/offers")
 	public ResponseEntity<List<JobOfferDto>> getAllOffersByUsername(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getAllOffers(username), HttpStatus.OK);
 	}
 	
+	// OK
 	@GetMapping("/{username}/ratings")
 	public ResponseEntity<RatingsDto> getRatings(@PathVariable String username) {
 		return new ResponseEntity<>(userService.getRatings(username), HttpStatus.OK);
 	}
 	
+	// OK
 	@GetMapping("/{username}/reviews")
 	public ResponseEntity<List<JobReviewDto>> getJobReviewAsLister(@PathVariable String username, @RequestParam JobReviewType type) {
 		return new ResponseEntity<>(userService.getJobReviews(username, type), HttpStatus.OK);

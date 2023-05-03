@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.grad.handywork.entity.Job;
+import com.grad.handywork.enumtypes.Cities;
 
 @Repository("JobRepository")
 public interface JobRepository extends JpaRepository<Job, Long>{
@@ -19,14 +20,11 @@ public interface JobRepository extends JpaRepository<Job, Long>{
 	
 	Page<Job> findAllByDoneAndOwnerUsernameNot(boolean done, String username,PageRequest pageRequest);
 	
-	Page<Job> findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, String city, boolean done, String username, PageRequest pageRequest);
+	Page<Job> findByFieldIsLikeIgnoreCaseAndCityAndDoneAndOwnerUsernameNot(String field, Cities city, boolean done, String username, PageRequest pageRequest);
 	
 	Page<Job> findByFieldIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String field, boolean done, String username, PageRequest pageRequest);
 	
-	Page<Job> findByCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(String city, boolean done, String username, PageRequest pageRequest);
-
-	@Query("SELECT j.city FROM Job j")
-	Set<String> findAllCities();
+	Page<Job> findByCityAndDoneAndOwnerUsernameNot(Cities city, boolean done, String username, PageRequest pageRequest);
 	
 	@Query("SELECT j.field FROM Job j")
 	Set<String> findAllFields();

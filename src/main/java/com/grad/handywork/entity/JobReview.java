@@ -116,7 +116,8 @@ public class JobReview {
 
 	public void setOnUser(User onUser) {
 		this.onUser = onUser;
-		onUser.getOnJobReviews().add(this);
+		if (!Objects.isNull(onUser))
+			onUser.getOnJobReviews().add(this);
 	}
 
 	public JobReviewType getType() {

@@ -55,7 +55,6 @@ public class UserDto {
 	private String pfpUrl;
 	
 	@NotNull(message = "City Field Cannot be empty")
-	@Size(min = 3, message = "City Field Cannot Be Less than 3")
 	private String city;
 	
 	private String pfpFile;

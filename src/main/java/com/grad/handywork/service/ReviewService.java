@@ -15,10 +15,10 @@ import com.grad.handywork.repo.JobReviewRepository;
 public class ReviewService {
 	
 	@Autowired
-	private JobReviewRepository jobReviewRepository;
+	private JobReviewMapper jobReviewMapper;
 	
 	@Autowired
-	private JobReviewMapper jobReviewMapper;
+	private JobReviewRepository jobReviewRepository;
 	
 	public JobReviewDto getJobReview(Long id) {
 		JobReview jobReview = jobReviewRepository.findById(id)

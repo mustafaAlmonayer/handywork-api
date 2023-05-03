@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 
 import com.grad.handywork.dto.UserDto;
 import com.grad.handywork.entity.User;
+import com.grad.handywork.enumtypes.Cities;
 
 @Mapper
 public interface UserMapper {
@@ -20,5 +21,15 @@ public interface UserMapper {
 	@Mapping(target="ownedJobReviews", ignore = true)
 	@Mapping(target="onJobReviews", ignore = true)
 	User userDtoToUserForSave(UserDto userDto);
+	
+	default String mapCities(Cities cities) {
+		String conversion;
+		if (cities.equals(Cities.MAAN)) {
+			conversion = "Ma'an";
+		} else {
+			conversion = cities.toString().charAt(0) + cities.toString().substring(1).toLowerCase();
+		}
+		return conversion;
+	}
 	
 }

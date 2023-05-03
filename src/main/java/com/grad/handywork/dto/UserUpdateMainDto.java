@@ -1,5 +1,7 @@
 package com.grad.handywork.dto;
 
+import com.grad.handywork.enumtypes.Cities;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +35,6 @@ public class UserUpdateMainDto {
 	private String phoneNumber;
 	
 	@NotNull(message = "City Field Cannot be empty")
-	@Size(min =3, message = "City Field Cannot Be Less than 3")
-	private String city;
+	private Cities city;
 	
 }

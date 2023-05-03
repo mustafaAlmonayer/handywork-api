@@ -18,10 +18,10 @@ public class AuthService {
 	private AuthenticationManager authenticationManager;
 	
 	@Autowired
-	private UserRepository userRepository;
+	private JwtService jwtService;
 	
 	@Autowired
-	private JwtService jwtService;
+	private UserRepository userRepository;
 
 	public AuthDto authinticate(LoginDto loginDto) {
 		authenticationManager.authenticate(

@@ -14,7 +14,7 @@ public interface JobOfferMapper {
 	@Mapping(target = "jobTitle", source = "job.jobName")
 	@Mapping(target = "jobId", source = "job.id")
 	@Mapping(target = "jobImageUrl", source = "job.imagesUrls")
-	@Mapping(target = "user", source = "user.id")
+	@Mapping(target = "user", source = "user.username")
 	@Mapping(target = "userImageUrl", source = "user.pfpUrl")
 	JobOfferDto jobOfferToJobOfferDto(JobOffer jobOffer);
 	

@@ -23,6 +23,7 @@ import com.grad.handywork.dto.JobDto;
 import com.grad.handywork.dto.JobOfferDto;
 import com.grad.handywork.dto.JobReviewDto;
 import com.grad.handywork.dto.JobUpdateDto;
+import com.grad.handywork.enumtypes.Cities;
 import com.grad.handywork.service.JobService;
 
 @RestController
@@ -32,34 +33,35 @@ public class JobController {
 	@Autowired
 	private JobService jobService;
 
+	// OK
 	@GetMapping("/all")
 	public ResponseEntity<AllJobsDto> getAllJobs(@RequestParam(required = false) String field,
-			@RequestParam(required = false) String city, @RequestParam(required = true) Integer page,
+			@RequestParam(required = false) Cities city, @RequestParam(required = true) Integer page,
 			@RequestHeader("Authorization") String bearerToken) {
 		return new ResponseEntity<>(jobService.getAllByFieldAndCity(field, city, page, bearerToken), HttpStatus.OK);
 	}
 
+	// OK
 	@GetMapping("/{id}")
 	public ResponseEntity<JobDto> getJobById(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.gtJobById(id), HttpStatus.OK);
 	}
 	
-	@GetMapping("/cities")
-	public ResponseEntity<Set<String>> getAllCities(){
-		return new ResponseEntity<>(jobService.getAllCities(), HttpStatus.OK);
-	}
-	
+	// OK
 	@GetMapping("/fields")
 	public ResponseEntity<Set<String>> getAllFields(){
 		return new ResponseEntity<>(jobService.getAllFields(), HttpStatus.OK);
 	}
 
+	
+	// OK
 	@PatchMapping("/{id}/update")
-	public ResponseEntity<JobDto> updateJob(@RequestHeader("Authorization") String BearerToken, @PathVariable Long id,
+	public ResponseEntity<JobDto> updateJob(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,
 			@Validated @RequestBody JobUpdateDto jobUpdateDto) {
 		return new ResponseEntity<>(jobService.updateJob(id, jobUpdateDto), HttpStatus.OK);
 	}
 	
+	// OK
 	@PostMapping("/{id}/makeOffer")
 	public ResponseEntity<Void> makeOffer(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,
 			@Validated @RequestBody JobOfferDto jobOfferDto) {
@@ -67,11 +69,13 @@ public class JobController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@GetMapping("/{id}/offers")
 	public ResponseEntity<List<JobOfferDto>> getOffers(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.getOffers(id), HttpStatus.OK);
 	}
 	
+	// OK
 	@PostMapping("/{id}/makeReview")
 	public ResponseEntity<Void> makeReview(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id,
 			@Validated @RequestBody JobReviewDto jobReviewDto) {
@@ -79,16 +83,17 @@ public class JobController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@GetMapping("/{id}/reviews")
 	public ResponseEntity<List<JobReviewDto>> getReviews(@PathVariable Long id) {
 		return new ResponseEntity<>(jobService.getJobReviews(id), HttpStatus.OK);
 	}
 	
+	// OK
 	@DeleteMapping("/{id}/delete")
 	public ResponseEntity<Void> deleteJob(@RequestHeader("Authorization") String BearerToken, @PathVariable Long id) {
 		jobService.deleteJob(id);
 		return new ResponseEntity<>(HttpStatus.OK);
-		
 	}
 
 }

@@ -34,6 +34,9 @@ import com.grad.handywork.repo.UserRepository;
 
 @Service
 public class UserService {
+	
+	@Autowired
+	private JwtService jwtService;
 
 	@Autowired
 	private UserMapper userMapper;
@@ -53,9 +56,6 @@ public class UserService {
 	@Autowired
 	private JobRepository jobRepository;
 
-	@Autowired
-	private JwtService jwtService;
-
 	public AuthDto saveUser(UserDto user) {
 		User savedUser = userRepository.save(userMapper.userDtoToUserForSave(user));
 		String jwtToken = jwtService.generateToken(savedUser);
@@ -68,7 +68,7 @@ public class UserService {
 		if (job.getCity() == null) {
 			job.setCity(user.getCity());
 		}
-		job.setCity(job.getCity().toLowerCase());
+		job.setCity(job.getCity());
 		job.setField(job.getField().toLowerCase());
 		job.setOwner(user);
 		jobRepository.save(job);

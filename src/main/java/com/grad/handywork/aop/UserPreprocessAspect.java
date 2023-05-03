@@ -36,13 +36,13 @@ public class UserPreprocessAspect {
 	private final String DEFAULT_JOB_P_URL;
 	
 	@Autowired
-	private UserRepository userRepository;
-	
-	@Autowired
 	private CloudinaryService cloudinaryService;
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	@Pointcut("execution(* com.grad.handywork.service.UserService.saveUser"
 			+ "(com.grad.handywork.dto.UserDto))")
@@ -81,7 +81,11 @@ public class UserPreprocessAspect {
 	@Order(value = 1)
 	@Before("updatePfpUrlPointCut() && args(*, *, pfpFileDto)")
 	public void beforeUpdatePfpUrl(PfpFileDto pfpFileDto) {
-		pfpFileDto.setPfpUrl(cloudinaryService.imageToUrl(pfpFileDto.getPfpFile()));
+		try {
+			pfpFileDto.setPfpUrl(cloudinaryService.imageToUrl(pfpFileDto.getPfpFile()));
+		} catch (Exception e) {
+			pfpFileDto.setPfpUrl(DEFAULT_PFP_URL);
+		}
 	}
 	
 	@Pointcut("execution(* com.grad.handywork.controller.UserController.saveJob"
@@ -105,7 +109,7 @@ public class UserPreprocessAspect {
 	public void updateMainPointCut() {};
 	
 	@Order(value = 1)
-	@Before("updateMainPointCut() && args(username, *, userUpdateMainDto)")
+	@Before("updateMainPointCut() && args(*, username, userUpdateMainDto)")
 	public void beforeUpdateMain(String username, UserUpdateMainDto userUpdateMainDto) throws BadAttributeValueExpException {
 		User user = userRepository.findByUsername(username).orElseThrow(
 				() -> new ResourceNotFoundException("User With Username: " + username + " Not Found"));

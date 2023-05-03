@@ -1,5 +1,7 @@
 package com.grad.handywork.dto;
 
+import com.grad.handywork.enumtypes.Cities;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -19,8 +21,8 @@ public class JobUpdateDto {
 	@Size(min = 15, message =  "Description Field Cannot Be Less Than 15")
 	private String description;
 	
-	@NotNull(message = "Cannot Be Empty")
-	private String city;
+	@NotNull(message = "City Cannot Be Empty")
+	private Cities city;
 	
 	@NotNull(message = "\"Field\" Field cannot be empty")
 	private String field;

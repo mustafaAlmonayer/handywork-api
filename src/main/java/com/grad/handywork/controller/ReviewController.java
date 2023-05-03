@@ -22,11 +22,13 @@ public class ReviewController {
 	@Autowired
 	private ReviewService reviewService;
 
+	// OK
 	@GetMapping("/{id}")
 	public ResponseEntity<JobReviewDto> getJobReview(@PathVariable Long id) {
 		return new ResponseEntity<>(reviewService.getJobReview(id), HttpStatus.OK);
 	}
 
+	// OK
 	@PatchMapping("/{id}/update")
 	public ResponseEntity<Void> updateJobReview(@RequestHeader("Authorization") String bearerToke,
 			@PathVariable Long id, @RequestBody JobReviewDto jobReviewDto) {
@@ -34,6 +36,7 @@ public class ReviewController {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@DeleteMapping("/{id}/delete")
 	public ResponseEntity<Void> deleteJobReview(@RequestHeader("Authorization") String bearerToke, @PathVariable Long id){
 		reviewService.deleteJobReview(id);

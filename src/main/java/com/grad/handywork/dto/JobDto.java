@@ -47,11 +47,10 @@ public class JobDto {
 	
 	private Boolean done;
 	
-    @Size(min = 3, max = 36, message =  "City Field Cannot Be Less Than 3 Or bigger Than 36")
+	@NotNull(message = "City Field Cannot be empty")
     private String city;
     
     @Size(max = 5, message = "Cannot Have More than 5 images")
 	private List<String> imagesFiles;
-
     
 }

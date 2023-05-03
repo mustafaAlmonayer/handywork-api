@@ -3,6 +3,7 @@ package com.grad.handywork.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import com.grad.handywork.entity.Job;
 import com.grad.handywork.entity.JobOffer;
 import com.grad.handywork.entity.JobReview;
 import com.grad.handywork.entity.User;
+import com.grad.handywork.enumtypes.Cities;
 import com.grad.handywork.enumtypes.JobReviewType;
 import com.grad.handywork.exception.ResourceNotFoundException;
 import com.grad.handywork.mapper.JobMapper;
@@ -35,6 +37,9 @@ import com.grad.handywork.repo.UserRepository;
 
 @Service
 public class JobService {
+	
+	@Autowired
+	private JwtService jwtService;
 
 	@Autowired
 	private JobMapper jobMapper;
@@ -57,41 +62,33 @@ public class JobService {
 	@Autowired
 	private JobReviewRepository jobReviewRepository;
 
-	@Autowired
-	private JwtService jwtService;
-
 	public JobDto gtJobById(Long id) {
 		Job job = jobRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Job With ID: " + id + " NotFond"));
 		return jobMapper.jobToJobDto(job);
 	}
 
-	public AllJobsDto getAllByFieldAndCity(String field, String city, Integer page, String bearerToken) {
+	public AllJobsDto getAllByFieldAndCity(String field, Cities city, Integer page, String bearerToken) {
 		String token = bearerToken.substring(7);
 		String username = jwtService.extractUsername(token);
 		Page<Job> jobs;
-		if (!StringUtils.hasText(field) && !StringUtils.hasText(city)) {
+		if (!StringUtils.hasText(field) && Objects.isNull(city)) {
 			jobs = jobRepository.findAllByDoneAndOwnerUsernameNot(false, username,
 					PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC, "publishDate")));
-		} else if (!StringUtils.hasText(field) && StringUtils.hasText(city)) {
-			jobs = jobRepository.findByCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%" + city + "%", false, username,
+		} else if (!StringUtils.hasText(field) && !Objects.isNull(city)) {
+			jobs = jobRepository.findByCityAndDoneAndOwnerUsernameNot( city, false, username,
 					PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC, "publishDate")));
-		} else if (StringUtils.hasText(field) && !StringUtils.hasText(city)) {
+		} else if (StringUtils.hasText(field) && Objects.isNull(city)) {
 			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot("%" + field + "%", false,
 					username, PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC, "publishDate")));
 		} else {
-			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityIsLikeIgnoreCaseAndDoneAndOwnerUsernameNot(
-					"%" + field + "%", "%" + city + "%", false, username,
+			jobs = jobRepository.findByFieldIsLikeIgnoreCaseAndCityAndDoneAndOwnerUsernameNot(
+					"%" + field + "%",  city, false, username,
 					PageRequest.of(page, 10).withSort(Sort.by(Direction.DESC, "publishDate")));
 		}
 		List<JobDto> dtos = new ArrayList<>();
 		jobs.stream().forEach((job) -> dtos.add(jobMapper.jobToJobDtoForBrowse(job)));
 		return AllJobsDto.builder().jobs(dtos).numOfPages(jobs.getTotalPages()).build();
-	}
-
-	public Set<String> getAllCities() {
-		Set<String> cities = jobRepository.findAllCities();
-		return cities.stream().map(city -> city.toLowerCase()).collect(Collectors.toSet());
 	}
 
 	public Set<String> getAllFields() {
@@ -128,8 +125,10 @@ public class JobService {
 	public List<JobOfferDto> getOffers(Long id) {
 		Job job = jobRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("Job Wiht ID: " + id + " Not Found"));
-		return job.getJobOffers().stream().map(jobOffer -> jobOfferMapper.jobOfferToJobOfferDto(jobOffer))
+		List<JobOfferDto> jobOfferDtos = job.getJobOffers().stream().map(jobOffer -> jobOfferMapper.jobOfferToJobOfferDto(jobOffer))
 				.collect(Collectors.toList());
+		jobOfferDtos.sort((o1, o2) -> o2.getId().compareTo(o1.getId()));
+		return jobOfferDtos;
 	}
 	
 	public void makeReview(String bearerToken, Long id, JobReviewDto jobReviewDto) {
@@ -174,8 +173,6 @@ public class JobService {
 		job.setOwner(null);
 		job.setDoneBy(null);
 		job.setImagesUrls(null);
-		job.setJobOffers(null);
-		job.setJobReviews(null);
 		jobRepository.delete(job);
 	}
 

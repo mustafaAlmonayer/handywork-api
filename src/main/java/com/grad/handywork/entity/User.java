@@ -11,6 +11,7 @@ import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.grad.handywork.enumtypes.Cities;
 import com.grad.handywork.validation.UniqueEmail;
 import com.grad.handywork.validation.UniquePhoneNumber;
 import com.grad.handywork.validation.UniqueUsername;
@@ -18,6 +19,8 @@ import com.grad.handywork.validation.UniqueUsername;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -79,9 +82,10 @@ public class User implements UserDetails {
 	private String pfpUrl;
 
 	@NotNull(message = "City Field Cannot be empty")
-	@Size(min = 3, message = "City Field Cannot Be Less than 3")
-	@Column(name = "city")
-	private String city;
+	@Column(name = "city", columnDefinition = "ENUM('IRBED', 'JERASH', 'AJLOUN', 'AMMAN', 'BALQAA',"
+			+ " 'ZARQAA', 'MAFRAQ', 'MAAN', 'KARAK', 'AQABA', 'MADABA')")
+	@Enumerated(EnumType.STRING)
+	private Cities city;
 
 	@OneToMany(mappedBy = "owner", cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH,
 			CascadeType.REMOVE }, fetch = FetchType.LAZY)
@@ -107,7 +111,7 @@ public class User implements UserDetails {
 	}
 
 	public User(Long id, String username, String password, String firstName, String lastName, String email,
-			String phoneNumber, String pfpUrl, String city, List<Job> jobs, List<JobOffer> jobOffers,
+			String phoneNumber, String pfpUrl, Cities city, List<Job> jobs, List<JobOffer> jobOffers,
 			List<JobReview> ownedJobReviews, String pfpFile) {
 		super();
 		this.id = id;
@@ -183,11 +187,11 @@ public class User implements UserDetails {
 		this.phoneNumber = phoneNumber;
 	}
 
-	public String getCity() {
+	public Cities getCity() {
 		return city;
 	}
 
-	public void setCity(String city) {
+	public void setCity(Cities city) {
 		this.city = city;
 	}
 

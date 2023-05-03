@@ -19,18 +19,21 @@ public class OfferController {
 	@Autowired
 	private OfferService offerService;
 	
+	// OK
 	@PatchMapping("/{id}/accept")
 	public ResponseEntity<Void> acceptOffer(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id) {
 		offerService.acceptOffer(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@PatchMapping("/{id}/reject")
 	public ResponseEntity<Void> rejectOffer(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id) {
 		offerService.rejectOffer(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
+	// OK
 	@DeleteMapping("/{id}/delete")
 	public ResponseEntity<Void> deleteOffer(@RequestHeader("Authorization") String bearerToken, @PathVariable Long id) {
 		offerService.deleteOffer(id);
