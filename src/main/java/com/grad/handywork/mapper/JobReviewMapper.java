@@ -19,7 +19,9 @@ public interface JobReviewMapper {
 	@Mapping(target = "jobId", source = "job.id")
 	@Mapping(target = "jobName", source = "job.jobName")
 	@Mapping(target = "byUserUsername", source = "byUser.username")
+	@Mapping(target = "byUserUsernameImageUrl", source = "byUser.pfpUrl")
 	@Mapping(target = "onUserUsername", source = "onUser.username")
+	@Mapping(target = "onUserUsernameImageUrl", source = "onUser.pfpUrl")
 	JobReviewDto jobReviewToJobReviewDto(JobReview jobReview);
 	
 }

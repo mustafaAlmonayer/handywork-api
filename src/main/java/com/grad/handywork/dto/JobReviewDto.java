@@ -27,7 +27,11 @@ public class JobReviewDto {
 	
 	private String byUserUsername;
 	
+	private String byUserUsernameImageUrl;
+	
 	private String onUserUsername;
+
+	private String onUserUsernameImageUrl;
 	
 	private JobReviewType type;
 	
