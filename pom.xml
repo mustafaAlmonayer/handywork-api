@@ -11,7 +11,7 @@
 
 	<groupId>com.grad</groupId>
 	<artifactId>handywork</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-stable</version>
 	<name>handywork</name>
 	<description>API for job listing </description>
 
