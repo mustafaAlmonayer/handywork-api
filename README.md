@@ -1,1 +1,1 @@
-Frond end Link [here](https://github.com/Panz0/HandyWork-Frontend)
+Frond end by @Panz0 Link [here](https://github.com/Panz0/HandyWork-Frontend)
